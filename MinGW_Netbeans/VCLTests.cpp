@@ -1,5 +1,8 @@
 #include "../code_under_test/vcl.h"
+
+#define QUREPORTER QUNetbeansReporter
 #include "../quick_unit.hpp"
+
 //--------------------------------------------
 DECLARE_SUITE(AnsiStringTests)
 

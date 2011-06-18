@@ -1,3 +1,10 @@
 .svn
+**/*.user
+**/*.opensdf
+**/*.sdf
+**/*.suo
+**/*ReSharper*
 **/build
 **/dist
+**/ipch
+**/Debug

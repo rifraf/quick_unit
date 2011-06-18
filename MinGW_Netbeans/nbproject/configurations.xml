@@ -5,6 +5,7 @@
                    displayName="Header Files"
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
+      <itemPath>../quick_unit.hpp</itemPath>
       <itemPath>../code_under_test/vcl.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"

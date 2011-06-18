@@ -87,6 +87,7 @@ protected:
   std::string _name;
   std::string _fail_message;
   std::ostringstream _info_message;
+  std::string _full_message;
 public:
   QUTest(const char *msg) {
     _fails = 0;
@@ -140,17 +141,88 @@ public:
   
   int fails() {
     if (_passes + _fails == 0) {
-      return 1; // No asserts - not a valid test
+      return 1; // No asserts - not a valid test. Report as a fail
     }
     return _fails;
   }
   int passes() {return _passes;}
-  std::string fail_message() {
+  const std::string &fail_message() {
     if (_passes + _fails == 0) {
-      return "No assertions were executed";
-    }
-    return _fail_message + _info_message.str().c_str();
+			_full_message = "No assertions were executed";
+    } else {
+			_full_message = _fail_message + _info_message.str();
+		}
+    return _full_message;
   }
+};
+
+class QUReporter {
+public:
+	// Before anything
+	virtual void StartingSuite(const std::string &suite_name) {
+    std::cout << std::endl << "----------------------------------------------------" << std::endl << "Starting " << suite_name << " at " << QUReporter::current_time() << std::endl;
+	}
+	// Just after BeforeAll();
+	virtual void StartedSuite(const std::string &suite_name) {}
+	// Before AfterAll();
+	virtual void StoppingSuite(const std::string &suite_name) {}
+	// After AfterAll();
+	virtual void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
+    std::cout << std::endl << "====================================================" << std::endl << "Finished " << suite_name << " at " << QUReporter::current_time() << 
+			"Passes: " << passes << " Fails: " << fails << std::endl;
+	}
+
+	// Before anything
+	virtual void StartingTest(const std::string &suite_name, const std::string &test_name) {
+    std::cout << test_name << ": ";
+	}
+	// Just after BeforeEach();
+	virtual void StartedTest(const std::string &suite_name, const std::string &test_name) {}
+	// Before AfterEach();
+	virtual void StoppingTest(const std::string &suite_name, const std::string &test_name) {}
+	// After AfterEach();
+	virtual void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {
+		std::cout << "FAILED. " << fail_message << std::endl;
+	}
+	// After AfterEach();
+	virtual void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {
+		std::cout << "OK." << std::endl;
+	}
+	// After AfterEach();
+	virtual void CompletedTest(const std::string &suite_name, const std::string &test_name, double duration) {}
+
+	static const char *current_time(void) {
+    time_t      szClock;
+    time( &szClock );
+		#ifdef _MSC_VER
+		static char timebuf[26];
+		struct tm newtime;
+		localtime_s(&newtime, &szClock);
+    asctime_s(timebuf, 26, &newtime);
+		return timebuf;
+		#else
+    return asctime(localtime(&szClock));
+		#endif
+	}
+};
+
+class QUNetbeansReporter : public QUReporter {
+public:
+	virtual void StartingSuite(const std::string &suite_name) { std::cout << "%SUITE_STARTING% " << suite_name << std::endl; }
+	virtual void StartedSuite(const std::string &suite_name)  { std::cout << "%SUITE_STARTED%" << std::endl;}
+	virtual void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
+    std::cout << std::endl << "%SUITE_FINISHED% time=" << std::fixed << duration << std::endl;
+	}
+	virtual void StartedTest(const std::string &suite_name, const std::string &test_name) {
+		std::cout << "%TEST_STARTED% " << test_name << " (" << suite_name << ")" << std::endl;
+	}
+	virtual void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {
+		std::cout << "%TEST_FAILED% time=" << std::fixed << duration << " testname=" << test_name << " (" << suite_name << ") message=" << fail_message << std::endl;
+	}
+  virtual void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {}
+	virtual void CompletedTest(const std::string &suite_name, const std::string &test_name, double duration) {
+		std::cout << "%TEST_FINISHED% time=" << std::fixed << duration << " " << test_name << " (" << suite_name << ")" << std::endl;
+	}
 };
 
 /******************************************************************************/
@@ -160,6 +232,7 @@ private:
   int _test_id;
   std::string _suite_name;
   std::list<QUTest *> _tests;
+	QUReporter * _reporter;
 
 protected:
   virtual void BeforeAll() {}  /* Callback before processing test */
@@ -171,25 +244,34 @@ public:
   QUTestSuite(const char *msg) {
     _suite_name = msg;
     _test_id = 0;
+#ifdef QUREPORTER
+		_reporter = new QUREPORTER();
+#else
+		_reporter = new QUReporter();
+#endif
     QUTestSuiteTracker::CurrentQUTestSuite(this);
   }
+	~QUTestSuite() {
+		delete _reporter;
+	}
   int Add(QUTest *test) {
     _tests.push_back(test);
     return _test_id++;
-  }
-  
+  }  
   int RunAll(void) {
-    int fails = 0;
+    unsigned fails = 0;
+    unsigned passes = 0;
     int suite_start, suite_end;
     suite_start = clock();
-    std::cout << "%SUITE_STARTING% " << _suite_name << std::endl;
-    std::cout << "%SUITE_STARTED%" << std::endl;
+		_reporter->StartingSuite(_suite_name);
     BeforeAll();
+		_reporter->StartedSuite(_suite_name);
     for (std::list<QUTest *>::iterator iter = _tests.begin(); iter != _tests.end(); ++iter) {
       bool failed = false;
-      std::cout << std::endl << "%TEST_STARTED% " << (*iter)->name_as_token() << " (" << _suite_name << ")" << std::endl;
+			_reporter->StartingTest(_suite_name, (*iter)->name_as_token());
       int test_start = clock();
       BeforeEach();
+			_reporter->StartedTest(_suite_name, (*iter)->name_as_token());
       try {
         (*iter)->Run();
       } catch(std::string msg) {
@@ -197,22 +279,24 @@ public:
       } catch(...) {
         failed = true;
       }
+			_reporter->StoppingTest(_suite_name, (*iter)->name_as_token());
       AfterEach();
       int test_end = clock();
       double diff = (test_end - test_start) / 1000.0;
       if (failed || (*iter)->fails()) {
         fails++;
-        std::cout <<
-          "%TEST_FAILED% time=" << std::fixed << diff << " testname=" <<
-          (*iter)->name_as_token() <<
-          " (" << _suite_name << ") message=" << (*iter)->fail_message() << std::endl;
-      }
-      std::cout << "%TEST_FINISHED% time=" << std::fixed << diff << " " << (*iter)->name_as_token() << " (" << _suite_name << ")" << std::endl;
+				_reporter->FailedTest(_suite_name, (*iter)->name_as_token(), diff, (*iter)->fail_message());
+      } else {
+				passes++;
+				_reporter->PassedTest(_suite_name, (*iter)->name_as_token(), diff);
+			}
+			_reporter->CompletedTest(_suite_name, (*iter)->name_as_token(), diff);
     }
+		_reporter->StoppingSuite(_suite_name);
     AfterAll();
     suite_end = clock();
     double diff = (suite_end - suite_start) / 1000.0;
-    std::cout << std::endl << "%SUITE_FINISHED% time=" << std::fixed << diff << std::endl;
+		_reporter->CompletedSuite(_suite_name, diff, passes, fails);
     return fails;
   }
 };
