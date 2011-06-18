@@ -1,0 +1,76 @@
+h1. Overview
+
+@quick_unit@ is a *very* clean and simple C++ Unit Test framework.
+
+Yes... another one ;-)
+
+It has 3 fundamental design goals:
+
+# A single header file contains everything. No libraries or supporting C++ files needed.
+# Tests must be trivially easy to create, with absolute minimum ceremony.
+# Cross platform
+
+h2. Example
+
+#include "quick_unit.hpp"
+
+DECLARE_SUITE(MyFirstTests)
+
+TEST("the compiler can add") {
+  assert(3 == 1 + 2,			SHOULD(add numbers));
+}
+
+TEST("the compiler can subtract") {
+  assert_equal(1 , 2 - 1, SHOULD(subtract numbers));
+}
+
+int main(int argc, char *argv[]) {
+  return MyFirstTests.RunAll();
+}
+
+The SHOULD elements are optional, but you _should_ use them...
+
+h1. Installation
+
+Just copy @quick_unit.hpp@ into your project.
+
+h1. Excuses
+
+It's not big.
+
+It's not clever.
+
+It's just supposed to let me write unit tests without getting in the way.
+
+h1. Motivation
+
+I spent decades programming in C++ and didn't know any better. 
+
+Then I found Ruby and it bent my mind. It changed completely the way I think about programming. Thanks Matz. Thanks Dave Thomas.
+
+I now favour code clarity over clever complexity. 
+
+I insist on test first / test driven programming. Even in C++. Especially in C++!!!!!
+
+@quick_unit@ is my response to having to go back to a C++ project and not being able to find a zero-impedance unit test framework.
+
+Some came close, and I resisted for a while, but I could not find any existing code that gave me the ability to 'just write it'. I hope that is what is acheived in @quick_unit@ and that it is so easy to use that no-one will have an excuse to skip their tests.
+
+h1. Platforms 
+
+Tested on:
+
+ *  Visual Studio 2010
+ *  Visual Studio 2005
+ *  MinGW GCC (5.16)
+ *  Debian Linux
+
+Example files are held in the repository to show examples of tests on differing platforms.
+
+The MinGW and Linux versions are built using Netbeans and emit results in the Netbeans 'Simple Test' format. They therefore integrate well as standalone tests within an overall C++ project.
+
+h1. License
+
+Copyright (c) 2011 David Lake (rifraf at rifraf.net)
+
+Released under the MIT license. See LICENSE file for details.
