@@ -17,7 +17,7 @@ h2. Example
 DECLARE_SUITE(MyFirstTests)
 
 TEST("the compiler can add") {
-  assert(3 == 1 + 2,			SHOULD(add numbers));
+  assert(3 == 1 + 2, SHOULD(add numbers));
 }
 
 TEST("the compiler can subtract") {
@@ -55,7 +55,7 @@ I insist on test first / test driven programming. Even in C++. Especially in C++
 
 @quick_unit@ is my response to having to go back to a C++ project and not being able to find a zero-impedance unit test framework.
 
-Some came close, and I resisted for a while, but I could not find any existing code that gave me the ability to 'just write it'. I hope that is what is acheived in @quick_unit@ and that it is so easy to use that no-one will have an excuse to skip their tests.
+Some came close, and I resisted for a while, but I could not find any existing code that gave me the ability to 'just write it'. I hope that is what is achieved in @quick_unit@ and that it is so easy to use that no-one will have an excuse to skip their tests.
 
 h1. Platforms 
 
