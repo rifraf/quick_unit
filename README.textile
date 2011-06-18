@@ -12,7 +12,7 @@ It has 3 fundamental design goals:
 
 h2. Example
 
-#include "quick_unit.hpp"
+<pre><code>#include "quick_unit.hpp"
 
 DECLARE_SUITE(MyFirstTests)
 
@@ -27,6 +27,7 @@ TEST("the compiler can subtract") {
 int main(int argc, char *argv[]) {
   return MyFirstTests.RunAll();
 }
+</code></pre>
 
 The SHOULD elements are optional, but you _should_ use them...
 
