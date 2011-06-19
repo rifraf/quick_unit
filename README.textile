@@ -67,9 +67,8 @@ It is possible to replace the default reporter with one of your own:
 
 <pre><code>#include "quick_unit.hpp"
 
-DECLARE_SUITE(My First Tests)
-
 TEST_REPORTER(Netbeans)
+DECLARE_SUITE(My First Tests)
 
 TEST(...)
 </code></pre>
@@ -78,10 +77,10 @@ Alternatively you can add additional reporters, and each of them will get notifi
 
 <pre><code>#include "quick_unit.hpp"
 
-DECLARE_SUITE(My First Tests)
-
 ADDITIONAL_REPORTER(Netbeans)
 ADDITIONAL_REPORTER(LogToMySQL)
+
+DECLARE_SUITE(My First Tests)
 
 TEST(...)
 </code></pre>
