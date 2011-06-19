@@ -1,33 +1,10 @@
 #include "../code_under_test/vcl.h"
 
 #include "../quick_unit.hpp"
+#include "../quick_unit_netbeans.hpp"
 
-BEGIN_REPORTER(Netbeans)
-  void StartingSuite(const std::string &suite_name) { std::cout << "%SUITE_STARTING% " << suite_name << std::endl; }
-  void StartedSuite(const std::string &suite_name)  { std::cout << "%SUITE_STARTED%" << std::endl;}
-  void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
-    std::cout << std::endl << "%SUITE_FINISHED% time=" << std::fixed << duration << std::endl;
-  }
-  void StartedTest(const std::string &suite_name, const std::string &test_name) {
-    std::cout << "%TEST_STARTED% " << without_whitespace(test_name) << " (" << suite_name << ")" << std::endl;
-  }
-  void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {
-    std::cout << "%TEST_FAILED% time=" << std::fixed << duration << " testname=" << without_whitespace(test_name) << " (" << suite_name << ") message=" << fail_message << std::endl;
-  }
-  void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {}
-  void CompletedTest(const std::string &suite_name, const std::string &test_name, double duration) {
-    std::cout << "%TEST_FINISHED% time=" << std::fixed << duration << " " << without_whitespace(test_name) << " (" << suite_name << ")" << std::endl;
-  }
-  private:
-  std::string without_whitespace(const std::string &str) { // Netbeans doesn't like spaces in status lines
-    std::string rep(str);
-    std::replace( rep.begin(), rep.end(), ' ', '_' );
-    return rep;
-  }
-END_REPORTER()
-
-TEST_REPORTER(Netbeans)
 TEST_REPORTER(Default)
+ADDITIONAL_REPORTER(Netbeans)
 
 //--------------------------------------------
 DECLARE_SUITE(AnsiStringTests)

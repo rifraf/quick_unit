@@ -6,6 +6,7 @@
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
       <itemPath>../quick_unit.hpp</itemPath>
+      <itemPath>../quick_unit_netbeans.hpp</itemPath>
       <itemPath>../code_under_test/vcl.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"

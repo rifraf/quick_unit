@@ -12,7 +12,7 @@ TEST("the compiler can add") {
 }
 
 TEST("the compiler can subtract") {
-  assert_equal(1 , 2 - 1, SHOULD(subtract numbers));
+  assert_equal(11 , 2 - 1, SHOULD(subtract numbers));
 }
 
 // ----------------------------

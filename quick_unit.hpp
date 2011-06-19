@@ -1,5 +1,5 @@
 /* 
- * quick_unit.hpp
+ * quick_unit.hpp : http://github.com/rifraf/quick_unit
  * Author: David Lake
  * Description:
  *  A tiny unit testing framework for C++, intended to make it
@@ -35,11 +35,14 @@
 
 /*
  * TODO:
+ * - switchable cout
+ * - req tracing
+ * - document reporters
+ * - document suite callbacks
  * - assertions for exceptions?
  * - other assertions? templated assertions?
- * - req tracing
+ * Y chainable reporters
  * Y switchable report format (Netbeans/Human/Trace?)
- * - switchable cout
  * Y decouple writer
  * Y time tests
  * Y before/after/pre/post
@@ -65,6 +68,8 @@ class QUTestSuite;
 /******************************************************************************/
 class QUReporter {  // Base class for all test reporters
 /******************************************************************************/
+protected:
+  QUReporter *_chain;
 public:
 	virtual void StartingSuite(const std::string &suite_name) {} // Before anything
 	virtual void StartedSuite(const std::string &suite_name) {}  // Just after BeforeAllTests();
@@ -77,6 +82,11 @@ public:
 	virtual void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {} // After AfterEachTest();
 	virtual void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
 	virtual void CompletedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
+
+  QUReporter() {_chain = NULL; }
+  
+  void chain(QUReporter *chain) { _chain = chain; }
+  QUReporter *chain(void) {return _chain; }
 
   // Helper: returns the current date/time
 	static const char *current_time(void) {
@@ -135,13 +145,16 @@ public:
 
   // Used to track the current QUReporter, and to set it to the
   // default reporter if no other reporter is declared.
-  static QUReporter *CurrentQUReporter(QUReporter *cur = NULL) {
+  static QUReporter *CurrentQUReporter(QUReporter *cur = NULL, bool chain = false) {
     static DefaultReporter defaultQUReporter;
     static QUReporter *current;
     if (!current) {
       current = &defaultQUReporter;
     }
     if (cur) {
+      if (chain) {
+        cur->chain(current);
+      }
       current = cur;
     }
     return current;
@@ -218,19 +231,19 @@ public:
   }
 
   void assert_equal(int a, int b) {
-    _info_message << " (Expected: " << a << ", got " << b << ")";
+    _info_message << " (Expected: " << a << ", got: " << b << ")";
     assert(a == b);
   }
   void assert_equal(int a, int b, const char *msg) {
-    _info_message << " (Expected: " << a << ", got " << b << ")";
+    _info_message << " (Expected: " << a << ", got: " << b << ")";
     assert(a == b, msg);
   }
   void assert_equal(const char *a, const char *b) {
-    _info_message << " (Expected: " << a << ", got " << b << ")";
+    _info_message << " (Expected: " << a << ", got: " << b << ")";
     assert(strcmp(a,b)==0);
   }
   void assert_equal(const char *a, const char *b, const char *msg) {
-    _info_message << " (Expected: " << a << ", got " << b << ")";
+    _info_message << " (Expected: " << a << ", got: " << b << ")";
     assert(strcmp(a,b)==0, msg);
   }
 };
@@ -259,41 +272,50 @@ public:
     _tests.push_back(test);
   }  
   int RunAll(void) {
+    std::list<QUReporter *> reporters;
+    QUReporter *r = _reporter;
+    while(r) {
+      reporters.push_back(r);
+      r = r->chain();
+    }
     unsigned fails = 0;
     unsigned passes = 0;
     int suite_start = clock();
-		_reporter->StartingSuite(_suite_name);
+
+    #define EACH_QUREPORTER(op) for (std::list<QUReporter *>::iterator qfiter = reporters.begin(); qfiter != reporters.end(); ++qfiter) {(*qfiter)->op; }
+    #define EACH_QUREPORTER_REVERSE(op) for (std::list<QUReporter *>::reverse_iterator qriter = reporters.rbegin(); qriter != reporters.rend(); ++qriter) {(*qriter)->op; }
+    EACH_QUREPORTER(StartingSuite(_suite_name))
     BeforeAllTests();
-		_reporter->StartedSuite(_suite_name);
+		EACH_QUREPORTER(StartedSuite(_suite_name))
     for (std::list<QUTest *>::iterator iter = _tests.begin(); iter != _tests.end(); ++iter) {
       bool failed = false;
       std::string test_name = (*iter)->name();
-			_reporter->StartingTest(_suite_name, test_name);
+			EACH_QUREPORTER(StartingTest(_suite_name, test_name))
       int test_start = clock();
       BeforeEachTest();
-			_reporter->StartedTest(_suite_name, test_name);
+			EACH_QUREPORTER(StartedTest(_suite_name, test_name))
       try {
         (*iter)->Run();
-      } catch(QUTestFail fail) {
+      } catch(QUTestFail) {
         // Failed assertions cause us to come here
       } catch(...) {
         failed = true;
       }
-			_reporter->StoppingTest(_suite_name, test_name);
+			EACH_QUREPORTER_REVERSE(StoppingTest(_suite_name, test_name))
       AfterEachTest();
       double duration = (clock() - test_start) / 1000.0;
       if (failed || (*iter)->fails()) {
         fails++;
-				_reporter->FailedTest(_suite_name, test_name, duration, (*iter)->fail_message());
+				EACH_QUREPORTER_REVERSE(FailedTest(_suite_name, test_name, duration, (*iter)->fail_message()))
       } else {
 				passes++;
-				_reporter->PassedTest(_suite_name, test_name, duration);
+				EACH_QUREPORTER_REVERSE(PassedTest(_suite_name, test_name, duration))
 			}
-			_reporter->CompletedTest(_suite_name, test_name, duration);
+			EACH_QUREPORTER_REVERSE(CompletedTest(_suite_name, test_name, duration))
     }
-		_reporter->StoppingSuite(_suite_name);
+		EACH_QUREPORTER_REVERSE(StoppingSuite(_suite_name))
     AfterAllTests();
-		_reporter->CompletedSuite(_suite_name, (clock() - suite_start) / 1000.0, passes, fails);
+		EACH_QUREPORTER_REVERSE(CompletedSuite(_suite_name, (clock() - suite_start) / 1000.0, passes, fails))
     return fails;
   }
 };
@@ -333,6 +355,9 @@ class QUSuite##name : public QUTestSuite{\
 /* Macros for REPORTERs */
 #define TEST_REPORTER(name) \
 using namespace quick_unit; namespace  { class _UNIQ_ID_(QUReporter) : public name ##Reporter { public: _UNIQ_ID_(QUReporter)() { QUTestSuiteTracker::CurrentQUReporter(this);} } static _UNIQ_ID_(Reporter); }
+
+#define ADDITIONAL_REPORTER(name) \
+using namespace quick_unit; namespace  { class _UNIQ_ID_(QUReporter) : public name ##Reporter { public: _UNIQ_ID_(QUReporter)() { QUTestSuiteTracker::CurrentQUReporter(this, true);} } static _UNIQ_ID_(Reporter); }
 
 #define BEGIN_REPORTER(name) namespace quick_unit { class name ##Reporter : public QUReporter { public:
 #define END_REPORTER() }; }
