@@ -1,4 +1,6 @@
 .svn
+**/*.ncb
+**/private/*
 **/*.user
 **/*.opensdf
 **/*.sdf

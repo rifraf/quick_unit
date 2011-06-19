@@ -1,17 +1,20 @@
 /* 
  * quick_unit.hpp : http://github.com/rifraf/quick_unit
  * Author: David Lake
+ *
  * Description:
  *  A tiny unit testing framework for C++, intended to make it
  *  so easy to write new unit tests that you won't even have to
  *  think about it.
+ *
  * Aims:
  *  Absolute minimum ceremony while creating readable tests
  *  Single header file contains everything. Nothing else to install
  *  Cross platform
+ *
  * Example:
  *
- *  DECLARE_SUITE(MyFirstTests)
+ *  DECLARE_SUITE(My First Tests)
  *  
  *  TEST("the compiler can add") {
  *    assert(3 == 1 + 2,			SHOULD(add numbers));
@@ -22,10 +25,16 @@
  *  }
  *  
  *  int main(int argc, char *argv[]) {
- *  	return MyFirstTests.RunAll();
+ *  	return RUN_TESTS();
  *  }
  *
  * Inspired by Ruby. Thanks Matz. Thanks Dave Thomas.
+ *
+ * Advanced features:
+ *  Plugin architecture for reporting allows you to replace
+ *  the default output text formatter. Alternatively you can
+ *  run additional reporters at the same time. See GitHub Wiki.
+ *
  * Tested on:
  *  Visual Studio 2010
  *  Visual Studio 2005
@@ -41,6 +50,7 @@
  * - document suite callbacks
  * - assertions for exceptions?
  * - other assertions? templated assertions?
+ * Y remove duplication in suite naming
  * Y chainable reporters
  * Y switchable report format (Netbeans/Human/Trace?)
  * Y decouple writer
@@ -83,8 +93,7 @@ public:
 	virtual void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
 	virtual void CompletedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
 
-  QUReporter() {_chain = NULL; }
-  
+  QUReporter() {_chain = NULL; }  
   void chain(QUReporter *chain) { _chain = chain; }
   QUReporter *chain(void) {return _chain; }
 
@@ -133,12 +142,15 @@ class QUTestSuiteTracker {
 public:
   // Used to track the current QUTestSuite.
   // It is a glorified global variable.
-  // QUTestSuite calls this from its constructor to set the current suite.
+  // QUTestSuite calls this from its constructor to set the current suite and
+  // get the old one.
   // QUTests call this with a NULL parameter to get the current suite.
   static QUTestSuite *CurrentQUTestSuite(QUTestSuite *cur = NULL) {
     static QUTestSuite *current;
     if (cur) {
+      QUTestSuite *old_cur = current;
       current = cur;
+      return old_cur;
     }
     return current;
   }
@@ -255,6 +267,7 @@ private:
   std::string _suite_name;
   std::list<QUTest *> _tests;
 	QUReporter * _reporter;
+  QUTestSuite * _chain;
 
 protected:
   virtual void BeforeAllTests() {}
@@ -266,12 +279,15 @@ public:
   QUTestSuite(const char *msg) {
     _suite_name = msg;
     _reporter = QUTestSuiteTracker::CurrentQUReporter();
-    QUTestSuiteTracker::CurrentQUTestSuite(this);
+    _chain = QUTestSuiteTracker::CurrentQUTestSuite(this);
   }
   void Add(QUTest *test) {
     _tests.push_back(test);
   }  
   int RunAll(void) {
+    if (_chain) {
+      _chain->RunAll();
+    }
     std::list<QUReporter *> reporters;
     QUReporter *r = _reporter;
     while(r) {
@@ -327,8 +343,8 @@ public:
 #define _UNIQ_ID_(x) _UNIQ_ID_1(x,  __LINE__ )
 
 // MUST be on a single line
-#define TEST(message) \
-namespace  { class _UNIQ_ID_(QUTest) : public QUTest {public: _UNIQ_ID_(QUTest)(const char *name) : QUTest(name) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);} void Run(void); } static _UNIQ_ID_(test)(message);} void _UNIQ_ID_(QUTest)::Run(void)
+#define TEST(name) \
+namespace  { class _UNIQ_ID_(QUTest) : public QUTest {public: _UNIQ_ID_(QUTest)() : QUTest(#name) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);} void Run(void); } static _UNIQ_ID_(test);} void _UNIQ_ID_(QUTest)::Run(void)
 
 /******************************************************************************/
 /* Macros for creating a SHOULD message */
@@ -340,17 +356,17 @@ namespace  { class _UNIQ_ID_(QUTest) : public QUTest {public: _UNIQ_ID_(QUTest)(
 /* Macros for creating a SUITE */
 #define BEGIN_SUITE(name) \
 using namespace quick_unit; \
-class QUSuite##name : public QUTestSuite{\
-  public: QUSuite##name(const char *n) : QUTestSuite(n) {}
+class _UNIQ_ID_(QUSuite) : public QUTestSuite{ public: _UNIQ_ID_(QUSuite)() : QUTestSuite(#name) {}
 #define BEFORE_ALL void BeforeAllTests()
 #define AFTER_ALL void AfterAllTests()
 #define BEFORE_EACH void BeforeEachTest()
 #define AFTER_EACH void AfterEachTest()
-#define END_SUITE(name) \
-} static name(# name);
+#define END_SUITE \
+} static _UNIQ_ID_(QUSuite);
 
-#define DECLARE_SUITE(name) BEGIN_SUITE(name) END_SUITE(name)
+#define DECLARE_SUITE(name) BEGIN_SUITE(name) END_SUITE
 
+#define RUN_TESTS() QUTestSuiteTracker::CurrentQUTestSuite()->RunAll()
 /******************************************************************************/
 /* Macros for REPORTERs */
 #define TEST_REPORTER(name) \

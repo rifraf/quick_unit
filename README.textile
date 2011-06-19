@@ -14,18 +14,18 @@ h2. Example
 
 <pre><code>#include "quick_unit.hpp"
 
-DECLARE_SUITE(MyFirstTests)
+DECLARE_SUITE(My First Tests)
 
-TEST("the compiler can add") {
+TEST(the compiler can add) {
   assert(3 == 1 + 2, SHOULD(add numbers));
 }
 
-TEST("the compiler can subtract") {
+TEST(the compiler can subtract) {
   assert_equal(1 , 2 - 1, SHOULD(subtract numbers));
 }
 
 int main(int argc, char *argv[]) {
-  return MyFirstTests.RunAll();
+  return RUN_TESTS();
 }
 </code></pre>
 
@@ -56,6 +56,37 @@ I insist on test first / test driven programming. Even in C++. Especially in C++
 @quick_unit@ is my response to having to go back to a C++ project and not being able to find a zero-impedance unit test framework.
 
 Some came close, and I resisted for a while, but I could not find any existing code that gave me the ability to 'just write it'. I hope that is what is achieved in @quick_unit@ and that it is so easy to use that no-one will have an excuse to skip their tests.
+
+h1. Advanced features
+
+h2. Reporters
+
+@quick_unit@ has a default reporter that prints the suite/test names to the screen, along with information about pass/fails and test duration.
+
+It is possible to replace the default reporter with one of your own:
+
+<pre><code>#include "quick_unit.hpp"
+
+DECLARE_SUITE(My First Tests)
+
+TEST_REPORTER(Netbeans)
+
+TEST(...)
+</code></pre>
+
+Alternatively you can add additional reporters, and each of them will get notified of the status:
+
+<pre><code>#include "quick_unit.hpp"
+
+DECLARE_SUITE(My First Tests)
+
+ADDITIONAL_REPORTER(Netbeans)
+ADDITIONAL_REPORTER(LogToMySQL)
+
+TEST(...)
+</code></pre>
+
+Details in the Wiki pages.
 
 h1. Platforms 
 

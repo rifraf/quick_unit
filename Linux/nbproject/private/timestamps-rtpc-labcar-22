@@ -1,17 +1,18 @@
-#Sat Jun 18 11:52:02 BST 2011
-v\:\\quick_unit\\linux\\vcltests.cpp=c1308394295689
-v\:\\quick_unit\\linux\\nbproject\\project.xml=t1308394160470
+#Sun Jun 19 18:48:08 BST 2011
+v\:\\quick_unit\\linux\\vcltests.cpp=t1308505300534
+v\:\\quick_unit\\linux\\nbproject\\project.xml=t1308505538922
 v\:\\quick_unit\\linux\\makefile=c1308393856967
-v\:\\quick_unit\\linux\\nbproject\\makefile-debug.mk=c1308394160427
-v\:\\quick_unit\\linux\\nbproject\\makefile-variables.mk=c1308394160433
-v\:\\quick_unit\\linux\\nbproject\\makefile-impl.mk=c1308394160424
-v\:\\quick_unit\\quick_unit.hpp=c1308393475366
-v\:\\quick_unit\\code_under_test\\vcl.h=c1308381012951
-v\:\\quick_unit\\linux\\linux.cpp=c1308394023210
-v\:\\quick_unit\\linux\\nbproject\\makefile-release.mk=t1308394160431
-v\:\\quick_unit\\linux\\nbproject\\package-release.bash=t1308394160432
-v\:\\quick_unit\\linux\\nbproject\\package-debug.bash=t1308394160428
+v\:\\quick_unit\\quick_unit_netbeans.hpp=t1308490056903
+v\:\\quick_unit\\linux\\nbproject\\makefile-debug.mk=c1308505538311
+v\:\\quick_unit\\linux\\nbproject\\makefile-variables.mk=c1308505538325
+v\:\\quick_unit\\linux\\nbproject\\makefile-impl.mk=c1308505538290
+v\:\\quick_unit\\quick_unit.hpp=c1308505665096
+v\:\\quick_unit\\code_under_test\\vcl.h=c1308394524458
+v\:\\quick_unit\\linux\\linux.cpp=c1308505507040
+v\:\\quick_unit\\linux\\nbproject\\makefile-release.mk=t1308505538319
+v\:\\quick_unit\\linux\\nbproject\\package-release.bash=t1308505538322
+v\:\\quick_unit\\linux\\nbproject\\package-debug.bash=t1308505538314
 v\:\\quick_unit\\linux\\nbproject\\project.properties=t1308393856782
-v\:\\quick_unit\\code_under_test\\vcl.cpp=c1308389910662
-v\:\\quick_unit\\linux\\nbproject\\configurations.xml=t1308394160407
+v\:\\quick_unit\\code_under_test\\vcl.cpp=c1308394523594
+v\:\\quick_unit\\linux\\nbproject\\configurations.xml=t1308505537759
 VERSION=1.2
