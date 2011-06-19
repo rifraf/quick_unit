@@ -59,6 +59,30 @@ Some came close, and I resisted for a while, but I could not find any existing c
 
 h1. Advanced features
 
+h2. Output stream
+
+By default, test results are reported on @std::cout@. This can be changed to any other stream of type @std::ostream@:
+
+<pre><code>...
+int main(int argc, char *argv[]) {
+  RUN_TESTS();  // To default std::cout
+
+  auto_ptr<ofstream> results_file(new ofstream("results.txt"));
+  TEST_OUTPUT(*results_file);
+  return RUN_TESTS(); // To file
+}
+</code></pre>
+
+If you use the @Output()@ stream or @printf@ in your test, then the text will be passed to each reporter and will take note of @TEST_OUTPUT@ redirections.
+
+<pre><code>...
+TEST(we can output text in a test) {
+  Output() << "I am in test '" << name() << "'" << std::endl;
+  printf("I am on line %d\n", __LINE__);
+  assert(true);
+}
+</code></pre>
+
 h2. Reporters
 
 @quick_unit@ has a default reporter that prints the suite/test names to the screen, along with information about pass/fails and test duration.

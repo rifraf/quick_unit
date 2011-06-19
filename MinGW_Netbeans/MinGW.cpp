@@ -14,6 +14,12 @@ TEST(the compiler can subtract) {
   assert_equal(11 , 2 - 1, SHOULD(subtract numbers));
 }
 
+TEST(we can output text in a test) {
+  Output() << "I am in test '" << name() << "'" << std::endl;
+  printf("I am on line %d\n", __LINE__);
+  assert(true);
+}
+
 // ----------------------------
 DECLARE_SUITE(Compiler Tests)
 
@@ -22,9 +28,18 @@ TEST(Compiler checks) {
   assert_equal(3 , __GNUC__, SHOULD(be 3 in my MinGW));
 }
 
+#include <fstream>
+#include <memory>
+using namespace std;
+
 // ----------------------------
 int main(int argc, char *argv[]) {
 	printf("Hello quick_unit!\n");
+
+  RUN_TESTS();  // To default std::cout
+  
+  auto_ptr<ofstream> results_file(new ofstream("results.txt"));
+  TEST_OUTPUT(*results_file);  
 	return RUN_TESTS();
 }
 

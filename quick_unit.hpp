@@ -35,6 +35,13 @@
  *  the default output text formatter. Alternatively you can
  *  run additional reporters at the same time. See GitHub Wiki.
  *
+ *  The output stream can be changed from the default std::cout.
+ *  See GitHub Wiki.
+ *
+ *  Tests can use printf, or stream text to Output(). Such text
+ *  gets routed through the reporters, so can be redirected to
+ *  the stream that the reporters are using. See GitHub Wiki.
+ *
  * Tested on:
  *  Visual Studio 2010
  *  Visual Studio 2005
@@ -44,12 +51,13 @@
 
 /*
  * TODO:
- * - switchable cout
- * - req tracing
  * - document reporters
  * - document suite callbacks
  * - assertions for exceptions?
  * - other assertions? templated assertions?
+ * - req tracing
+ * Y output stream for tests too
+ * Y switchable cout
  * Y remove duplication in suite naming
  * Y chainable reporters
  * Y switchable report format (Netbeans/Human/Trace?)
@@ -69,6 +77,7 @@
 #include <functional>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #undef assert
 
 namespace quick_unit {
@@ -76,10 +85,32 @@ class QUTest;
 class QUTestSuite;
 
 /******************************************************************************/
+class QUStdOutTracker {
+/******************************************************************************/
+public:
+  // Used to track the current output stream.
+  // When called with NULL argument it just returns the current output stream
+  // When called with a new_stream, the output stream gets changed
+  static std::ostream &Output(std::ostream *new_stream = NULL) {
+    static std::ostream *current;
+    if (!current) {
+      current = &std::cout;
+    }
+    if (new_stream) {
+      current = new_stream;
+    }
+    return *current;
+  }
+};
+#define TEST_OUTPUT(stream) quick_unit::QUStdOutTracker::Output(&stream);
+
+/******************************************************************************/
 class QUReporter {  // Base class for all test reporters
 /******************************************************************************/
 protected:
   QUReporter *_chain;
+  static std::ostream &Output(void) { return QUStdOutTracker::Output(); }
+
 public:
 	virtual void StartingSuite(const std::string &suite_name) {} // Before anything
 	virtual void StartedSuite(const std::string &suite_name) {}  // Just after BeforeAllTests();
@@ -91,6 +122,7 @@ public:
 	virtual void StoppingTest(const std::string &suite_name, const std::string &test_name) {} // Before AfterEachTest();
 	virtual void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {} // After AfterEachTest();
 	virtual void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
+  virtual void TestOutput(const std::string &suite_name, const std::string &test_name, const std::string &text) {} // Before CompletedTest();
 	virtual void CompletedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
 
   QUReporter() {_chain = NULL; }  
@@ -117,22 +149,29 @@ public:
 class DefaultReporter : public QUReporter { // The default test reporter
 /******************************************************************************/
 public:
-	virtual void StartingSuite(const std::string &suite_name) {
-    std::cout << std::endl << "----------------------------------------------------" << std::endl << "Starting " << suite_name << " at " << QUReporter::current_time() << std::endl;
+	void StartingSuite(const std::string &suite_name) {
+    Output() << std::endl << "----------------------------------------------------" << std::endl << "Starting " << suite_name << " at " << QUReporter::current_time() << std::endl;
 	}
-	virtual void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
-    std::cout << std::endl << "====================================================" << std::endl << "Finished " << suite_name << " at " << QUReporter::current_time() <<
+	void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
+    Output() << std::endl << "====================================================" << std::endl << "Finished " << suite_name << " at " << QUReporter::current_time() <<
 			"Passes: " << passes << " Fails: " << fails << std::endl;
 	}
-	virtual void StartingTest(const std::string &suite_name, const std::string &test_name) {
-    std::cout << "Test: " << test_name << " => ";
+	void StartingTest(const std::string &suite_name, const std::string &test_name) {
+    Output() << "Test: " << test_name << " => ";
 	}
-	virtual void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {
-		std::cout << "FAILED. " << fail_message << std::endl;
+	void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {
+		Output() << "FAILED. " << fail_message << std::endl;
 	}
-	virtual void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {
-		std::cout << "OK." << std::endl;
+	void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {
+		Output() << "OK." << std::endl;
 	}
+  void TestOutput(const std::string &suite_name, const std::string &test_name, const std::string &text) {
+    Output()
+      << "-- Output --" << std::endl
+      << text
+      << "------------" << std::endl;
+  }
+
 };
 
 /******************************************************************************/
@@ -171,6 +210,7 @@ public:
     }
     return current;
   }
+
 };
 
 /******************************************************************************/
@@ -190,6 +230,26 @@ protected:
   std::string _fail_message;
   std::ostringstream _info_message;
   std::string _full_message;
+  std::ostringstream _output;
+  std::string _output_message;
+private:
+private:
+  int format_arg_list(std::string& out, int length, const char *fmt, va_list args) {
+    if (!fmt) return -1;
+    int result = 0;
+    char *buffer = NULL;
+    buffer = new char [length + 1];
+    memset(buffer, 0, length + 1);
+		#ifdef _MSC_VER
+    result = vsnprintf_s(buffer, length + 1, _TRUNCATE, fmt, args);
+		#else
+    result = vsnprintf(buffer, length, fmt, args);
+		#endif
+    out = buffer;
+    delete [] buffer;
+    return result;
+  }
+
 public:
   QUTest(const char *msg) {
     _fails = 0;
@@ -200,14 +260,30 @@ public:
   }
   virtual void Run(void) = 0;
 
-  const std::string &name() {
-    return _test_name;
+  const std::string &name() { return _test_name; }
+  
+  std::ostream &Output() {return _output;}
+  const std::string &test_output() {_output_message = _output.str(); _output.seekp(0, std::ios::beg); return _output_message;}
+
+  int printf(const char* fmt, ...) {
+    int count = 0;
+    va_list args;
+    va_start(args, fmt);
+    std::string s;
+    int length = 256;
+    int result = format_arg_list(s, length, fmt, args);
+    count += result;
+    va_end(args);
+    if (result >= 256) {
+      va_start(args, fmt);
+      format_arg_list(s, result + 1, fmt, args);
+      va_end(args);
+    }
+    _output << s;
+    return count;
   }
 
-  int passes() {
-    return _passes;
-  }
-  
+  int passes() { return _passes; }
   int fails() {
     if (_passes + _fails == 0) {
       return 1; // No asserts - not a valid test. Report as a fail
@@ -316,7 +392,7 @@ public:
         // Failed assertions cause us to come here
       } catch(...) {
         failed = true;
-      }
+      }     
 			EACH_QUREPORTER_REVERSE(StoppingTest(_suite_name, test_name))
       AfterEachTest();
       double duration = (clock() - test_start) / 1000.0;
@@ -327,6 +403,10 @@ public:
 				passes++;
 				EACH_QUREPORTER_REVERSE(PassedTest(_suite_name, test_name, duration))
 			}
+      std::string output = (*iter)->test_output();
+      if (!output.empty()) {
+  			EACH_QUREPORTER_REVERSE(TestOutput(_suite_name, test_name, output))
+      }
 			EACH_QUREPORTER_REVERSE(CompletedTest(_suite_name, test_name, duration))
     }
 		EACH_QUREPORTER_REVERSE(StoppingSuite(_suite_name))

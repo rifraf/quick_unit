@@ -24,22 +24,22 @@
 
 BEGIN_REPORTER(Netbeans)
   void StartingSuite(const std::string &suite_name) {
-    std::cout << "%SUITE_STARTING% " << suite_name << std::endl;
+    Output() << "%SUITE_STARTING% " << suite_name << std::endl;
   }
   void StartedSuite(const std::string &suite_name)  {
-    std::cout << "%SUITE_STARTED%" << std::endl;
+    Output() << "%SUITE_STARTED%" << std::endl;
   }
   void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
-    std::cout << std::endl << "%SUITE_FINISHED% time=" << std::fixed << duration << std::endl;
+    Output() << std::endl << "%SUITE_FINISHED% time=" << std::fixed << duration << std::endl;
   }
   void StartingTest(const std::string &suite_name, const std::string &test_name) {
-    std::cout << "%TEST_STARTED% " << without_whitespace(test_name) << " (" << suite_name << ")" << std::endl;
+    Output() << "%TEST_STARTED% " << without_whitespace(test_name) << " (" << suite_name << ")" << std::endl;
   }
   void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {
-    std::cout << "%TEST_FAILED% time=" << std::fixed << duration << " testname=" << without_whitespace(test_name) << " (" << suite_name << ") message=" << fail_message << std::endl;
+    Output() << "%TEST_FAILED% time=" << std::fixed << duration << " testname=" << without_whitespace(test_name) << " (" << suite_name << ") message=" << fail_message << std::endl;
   }
   void CompletedTest(const std::string &suite_name, const std::string &test_name, double duration) {
-    std::cout << "%TEST_FINISHED% time=" << std::fixed << duration << " " << without_whitespace(test_name) << " (" << suite_name << ")" << std::endl;
+    Output() << "%TEST_FINISHED% time=" << std::fixed << duration << " " << without_whitespace(test_name) << " (" << suite_name << ")" << std::endl;
   }
 
 private:
