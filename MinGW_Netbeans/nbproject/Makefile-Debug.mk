@@ -34,8 +34,8 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/194468644/vcl.o \
-	${OBJECTDIR}/Compiler.o \
-	${OBJECTDIR}/MinGW.o
+	${OBJECTDIR}/MinGW.o \
+	${OBJECTDIR}/Compiler.o
 
 # Test Directory
 TESTDIR=build/${CND_CONF}/${CND_PLATFORM}/tests
@@ -43,6 +43,7 @@ TESTDIR=build/${CND_CONF}/${CND_PLATFORM}/tests
 # Test Files
 TESTFILES= \
 	${TESTDIR}/TestFiles/f2 \
+	${TESTDIR}/TestFiles/f3 \
 	${TESTDIR}/TestFiles/f1
 
 # C Compiler Flags
@@ -73,13 +74,13 @@ ${OBJECTDIR}/_ext/194468644/vcl.o: ../code_under_test/vcl.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/194468644
 	$(COMPILE.cc) -g -o ${OBJECTDIR}/_ext/194468644/vcl.o ../code_under_test/vcl.cpp
 
-${OBJECTDIR}/Compiler.o: Compiler.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	$(COMPILE.cc) -g -o ${OBJECTDIR}/Compiler.o Compiler.cpp
-
 ${OBJECTDIR}/MinGW.o: MinGW.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	$(COMPILE.cc) -g -o ${OBJECTDIR}/MinGW.o MinGW.cpp
+
+${OBJECTDIR}/Compiler.o: Compiler.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	$(COMPILE.cc) -g -o ${OBJECTDIR}/Compiler.o Compiler.cpp
 
 # Subprojects
 .build-subprojects:
@@ -90,6 +91,10 @@ ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/MoreExamples.o ${OBJECTFILES:%.o=%_nom
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
 
+${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/ReqTraceTests.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc} -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
+
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/VCLTests.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
@@ -97,12 +102,17 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/VCLTests.o ${OBJECTFILES:%.o=%_nomain.
 
 ${TESTDIR}/tests/MoreExamples.o: tests/MoreExamples.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
-	$(COMPILE.cc) -g -I. -o ${TESTDIR}/tests/MoreExamples.o tests/MoreExamples.cpp
+	$(COMPILE.cc) -g -I. -I. -o ${TESTDIR}/tests/MoreExamples.o tests/MoreExamples.cpp
+
+
+${TESTDIR}/tests/ReqTraceTests.o: tests/ReqTraceTests.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	$(COMPILE.cc) -g -I. -o ${TESTDIR}/tests/ReqTraceTests.o tests/ReqTraceTests.cpp
 
 
 ${TESTDIR}/tests/VCLTests.o: tests/VCLTests.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
-	$(COMPILE.cc) -g -I. -I. -o ${TESTDIR}/tests/VCLTests.o tests/VCLTests.cpp
+	$(COMPILE.cc) -g -I. -I. -I. -o ${TESTDIR}/tests/VCLTests.o tests/VCLTests.cpp
 
 
 ${OBJECTDIR}/_ext/194468644/vcl_nomain.o: ${OBJECTDIR}/_ext/194468644/vcl.o ../code_under_test/vcl.cpp 
@@ -117,18 +127,6 @@ ${OBJECTDIR}/_ext/194468644/vcl_nomain.o: ${OBJECTDIR}/_ext/194468644/vcl.o ../c
 	    ${CP} ${OBJECTDIR}/_ext/194468644/vcl.o ${OBJECTDIR}/_ext/194468644/vcl_nomain.o;\
 	fi
 
-${OBJECTDIR}/Compiler_nomain.o: ${OBJECTDIR}/Compiler.o Compiler.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/Compiler.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    $(COMPILE.cc) -g -Dmain=__nomain -o ${OBJECTDIR}/Compiler_nomain.o Compiler.cpp;\
-	else  \
-	    ${CP} ${OBJECTDIR}/Compiler.o ${OBJECTDIR}/Compiler_nomain.o;\
-	fi
-
 ${OBJECTDIR}/MinGW_nomain.o: ${OBJECTDIR}/MinGW.o MinGW.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/MinGW.o`; \
@@ -141,11 +139,24 @@ ${OBJECTDIR}/MinGW_nomain.o: ${OBJECTDIR}/MinGW.o MinGW.cpp
 	    ${CP} ${OBJECTDIR}/MinGW.o ${OBJECTDIR}/MinGW_nomain.o;\
 	fi
 
+${OBJECTDIR}/Compiler_nomain.o: ${OBJECTDIR}/Compiler.o Compiler.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/Compiler.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    $(COMPILE.cc) -g -Dmain=__nomain -o ${OBJECTDIR}/Compiler_nomain.o Compiler.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/Compiler.o ${OBJECTDIR}/Compiler_nomain.o;\
+	fi
+
 # Run Test Targets
 .test-conf:
 	@if [ "${TEST}" = "" ]; \
 	then  \
 	    ${TESTDIR}/TestFiles/f2 || true; \
+	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f1 || true; \
 	else  \
 	    ./${TEST} || true; \

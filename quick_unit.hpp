@@ -414,7 +414,8 @@ public:
 #define _UNIQ_ID_(x) _UNIQ_ID_1(x,  __LINE__ )
 
 // MUST be on a single line
-#define TEST(name) namespace { class _UNIQ_ID_(QUTest) : public QUTest {public: _UNIQ_ID_(QUTest)() : QUTest(#name) {if (QUTestSuiteTracker::CurrentQUTestSuite()) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);}} void Run(void); } static _UNIQ_ID_(test);} void _UNIQ_ID_(QUTest)::Run(void)
+#define QU_TEST_ANCESTOR QUTest
+#define TEST(name) namespace { class _UNIQ_ID_(QUTest) : public QU_TEST_ANCESTOR {public: _UNIQ_ID_(QUTest)() : QU_TEST_ANCESTOR(#name) {if (QUTestSuiteTracker::CurrentQUTestSuite()) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);}} void Run(void); } static _UNIQ_ID_(test);} void _UNIQ_ID_(QUTest)::Run(void)
 
 /******************************************************************************/
 /* Macros for creating a SHOULD message */
