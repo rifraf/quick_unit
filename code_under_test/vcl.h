@@ -35,6 +35,7 @@ protected:
   std::string _string;
 
 public:
+  friend std::ostream& operator<<(std::ostream &, const AnsiString &);
 
   AnsiString() {
   };
@@ -95,19 +96,19 @@ public:
     return result;
   }
 
-  bool operator==(const char *str) {
+  bool operator==(const char *str) const {
     return _string == str;
   }
 
-  bool operator!=(const char *str) {
+  bool operator!=(const char *str) const {
     return _string != str;
   }
 
-  bool operator==(AnsiString str) {
+  bool operator==(const AnsiString &str) const {
     return _string == str._string;
   }
 
-  bool operator!=(AnsiString str) {
+  bool operator!=(const AnsiString &str) const {
     return _string != str._string;
   }
 

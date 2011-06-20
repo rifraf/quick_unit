@@ -81,7 +81,7 @@ ${OBJECTDIR}/MinGW.o: MinGW.cpp
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
-${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/UltraSlim.o ${OBJECTFILES:%.o=%_nomain.o}
+${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/MoreExamples.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
 
@@ -90,9 +90,9 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/VCLTests.o ${OBJECTFILES:%.o=%_nomain.o}
 	${LINK.cc} -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
 
 
-${TESTDIR}/tests/UltraSlim.o: tests/UltraSlim.cpp 
+${TESTDIR}/tests/MoreExamples.o: tests/MoreExamples.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
-	$(COMPILE.cc) -g -I. -o ${TESTDIR}/tests/UltraSlim.o tests/UltraSlim.cpp
+	$(COMPILE.cc) -g -I. -o ${TESTDIR}/tests/MoreExamples.o tests/MoreExamples.cpp
 
 
 ${TESTDIR}/VCLTests.o: VCLTests.cpp 

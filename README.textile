@@ -59,6 +59,43 @@ Some came close, and I resisted for a while, but I could not find any existing c
 
 h1. Advanced features
 
+h2. Test setup and teardown
+
+Setup and teardown methods can be attached to a test suite. The setup method gets called before each test. The teardown method gets called after the test, regardless of whether the test passes or not.
+
+A slightly expanded suite declaration is needed for this, as shown below. You can declare variables in the suite which can be accessed in its tests (below). The name passed to @END_SUITE_AS@ becomes the name that you use to access the suite variables.
+
+<pre><code>BEGIN_SUITE(Setup and teardown)
+  Wibble *thing;
+
+  SETUP    { thing = new Wibble(); }
+  TEARDOWN { delete thing; }
+
+END_SUITE_AS(suite)
+
+TEST(First test) {
+  assert( suite.thing->ReadyToBeTested(), SHOULD(be re-initialized for each test));
+}
+TEST(Second test) {
+  assert( suite.thing->ReadyToBeTested(), SHOULD(be re-initialized for each test));
+}
+</code></pre>
+
+h2. Suite setup and teardown
+
+You can also run code to setup and teardown the complete suite. This is only rarely useful - perhaps to make a connection to a remote machine.
+
+<pre><code>BEGIN_SUITE(Setup and teardown)
+  DatabaseConnection connection;
+  SETUP_SUITE    { connection.Connect(); }
+  TEARDOWN_SUITE { connection.Disconnect(); }
+END_SUITE_AS(suite)
+
+TEST(Something) {
+  ... use suite.connection
+}
+</code></pre>
+
 h2. Output stream
 
 By default, test results are reported on @std::cout@. This can be changed to any other stream of type @std::ostream@:
@@ -123,6 +160,11 @@ Tested on:
 Example files are held in the repository to show examples of tests on differing platforms.
 
 The MinGW and Linux versions are built using Netbeans and emit results in the Netbeans 'Simple Test' format. They therefore integrate well as standalone tests within an overall C++ project.
+
+h1. TODO
+
+* Assertions for exceptions
+* Requirement tracing support
 
 h1. License
 

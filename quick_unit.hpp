@@ -31,39 +31,26 @@
  * Inspired by Ruby. Thanks Matz. Thanks Dave Thomas.
  *
  * Advanced features:
+ *
  *  Plugin architecture for reporting allows you to replace
  *  the default output text formatter. Alternatively you can
- *  run additional reporters at the same time. See GitHub Wiki.
+ *  run additional reporters at the same time. See GitHub/readme.
  *
  *  The output stream can be changed from the default std::cout.
- *  See GitHub Wiki.
+ *  See GitHub/readme.
+ *
+ *  Test Setup/Teardown methods can be declared. (Also per-suite
+ *  setup/teardown.) See GitHub/readme.
  *
  *  Tests can use printf, or stream text to Output(). Such text
  *  gets routed through the reporters, so can be redirected to
- *  the stream that the reporters are using. See GitHub Wiki.
+ *  the stream that the reporters are using. See GitHub/readme.
  *
  * Tested on:
  *  Visual Studio 2010
  *  Visual Studio 2005
  *  MinGW GCC (5.16)
  *  Debian linux
- */
-
-/*
- * TODO:
- * - document reporters
- * - document suite callbacks
- * - assertions for exceptions?
- * - other assertions? templated assertions?
- * - req tracing
- * Y output stream for tests too
- * Y switchable cout
- * Y remove duplication in suite naming
- * Y chainable reporters
- * Y switchable report format (Netbeans/Human/Trace?)
- * Y decouple writer
- * Y time tests
- * Y before/after/pre/post
  */
 #ifndef QUICK_UNIT_HPP
 #define	QUICK_UNIT_HPP
@@ -302,39 +289,44 @@ public:
     return _full_message;
   }
   
-	void assert(bool truth) {
-    std::ostringstream os;
-		os << "assertion #" << _assertions + 1;
-    assert(truth, os.str().c_str());
-	}
-
-  void assert(bool truth, const char *msg) {
+  void assert(bool truth, const char *msg = NULL) {
     _assertions++;
     if (truth) {
       _info_message.str("");
       _passes++;
     } else {
-      _fail_message = msg;
+      if (msg) {
+        _fail_message = msg;
+      } else {
+        std::ostringstream os;
+        os << "assertion #" << _assertions;
+        _fail_message = os.str();
+      }
       _fails++;
       throw new QUTestFail();
     }
   }
 
-  void assert_equal(int a, int b) {
-    _info_message << " (Expected: " << a << ", got: " << b << ")";
-    assert(a == b);
-  }
-  void assert_equal(int a, int b, const char *msg) {
+  template <class T>
+  void assert_equal(const T& a, const T& b, const char *msg = NULL) {
     _info_message << " (Expected: " << a << ", got: " << b << ")";
     assert(a == b, msg);
   }
-  void assert_equal(const char *a, const char *b) {
-    _info_message << " (Expected: " << a << ", got: " << b << ")";
-    assert(strcmp(a,b)==0);
+
+  template <class T>
+  void assert_not_equal(const T& a, const T& b, const char *msg = NULL) {
+    _info_message << " (Expected difference. Both: " << a << ")";
+    assert(a != b, msg);
   }
-  void assert_equal(const char *a, const char *b, const char *msg) {
+
+  void assert_equal(const char *a, const char *b, const char *msg = NULL) {
     _info_message << " (Expected: " << a << ", got: " << b << ")";
-    assert(strcmp(a,b)==0, msg);
+    assert(strcmp(a,b) == 0, msg);
+  }
+
+  void assert_not_equal(const char *a, const char *b, const char *msg = NULL) {
+    _info_message << " (Expected difference. Both: " << a << ")";
+    assert(strcmp(a,b) != 0, msg);
   }
 };
 
@@ -439,14 +431,14 @@ namespace  { class _UNIQ_ID_(QUTest) : public QUTest {public: _UNIQ_ID_(QUTest)(
 #define BEGIN_SUITE(name) \
 using namespace quick_unit; \
 class _UNIQ_ID_(QUSuite) : public QUTestSuite{ public: _UNIQ_ID_(QUSuite)() : QUTestSuite(#name) {}
-#define BEFORE_ALL void BeforeAllTests()
-#define AFTER_ALL void AfterAllTests()
-#define BEFORE_EACH void BeforeEachTest()
-#define AFTER_EACH void AfterEachTest()
-#define END_SUITE \
-} static _UNIQ_ID_(QUSuite);
-
+#define END_SUITE_AS(name) } static name;
+#define END_SUITE } static _UNIQ_ID_(QUSuite);
 #define DECLARE_SUITE(name) BEGIN_SUITE(name) END_SUITE
+
+#define SETUP_SUITE void BeforeAllTests()
+#define TEARDOWN_SUITE void AfterAllTests()
+#define SETUP void BeforeEachTest()
+#define TEARDOWN void AfterEachTest()
 
 #define RUN_TESTS() QUTestSuiteTracker::CurrentQUTestSuite()->RunAll()
 /******************************************************************************/

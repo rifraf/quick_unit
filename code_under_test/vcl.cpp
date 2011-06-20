@@ -22,6 +22,12 @@ static std::vector<std::string> split(const std::string &s, char delim) {
 }
 
 //----------------------------------------------------
+std::ostream& operator<<(std::ostream &stream, const AnsiString &str) {
+  stream << str._string;
+  return stream;
+}
+
+//----------------------------------------------------
 AnsiString TStringList::Text(void) {
   // Sorting not supported at the moment...
   return _string.c_str();
