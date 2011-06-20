@@ -2,8 +2,10 @@
 #include "../code_under_test/vcl.cpp"
 #include "../quick_unit.hpp"
 
+TEST_REPORTER(Default)
+
 //--------------------------------------------
-DECLARE_SUITE(AnsiStringTests)
+DECLARE_SUITE(AnsiString Tests)
 
 TEST(AnsiStrings can be created) {
   assert(new AnsiString() != NULL,            SHOULD(create empty AnsiString));
@@ -35,11 +37,15 @@ TEST(AnsiString content can be compared) {
   AnsiString y("Fo");
   AnsiString z("Fi");
 
-  assert(x == z, SHOULD(match content));
-  assert(x != y, SHOULD(not match content));
+  assert(x == z,         SHOULD(match content));
+  assert_equal(x, z,     SHOULD(match content));
+  assert(x != y,         SHOULD(not match content));
+  assert_not_equal(x, y, SHOULD(not match content));
 
-  assert(x == "Fi",   SHOULD(match string content));
-  assert(x != "Blah", SHOULD(not match string content));
+  assert(x == "Fi",                   SHOULD(match string content));
+  assert_equal(x.c_str(), "Fi",       SHOULD(match string content));
+  assert(x != "Blah",                 SHOULD(not match string content));
+  assert_not_equal(x.c_str(), "Blah", SHOULD(not match string content));
 }
 
 TEST(AnsiStrings can be added) {
@@ -62,12 +68,12 @@ TEST(AnsiStrings can be appended) {
 
 TEST(AnsiStrings have size) {
   AnsiString x;
-  assert(x.IsEmpty(),     SHOULD(be empty after init));
-  assert(0 == x.Length(), SHOULD(be have zero length after init));
+  assert(x.IsEmpty(),         SHOULD(be empty after init));
+  assert_equal(0, x.Length(), SHOULD(be have zero length after init));
 
   x = "1234567890";
   assert(!x.IsEmpty(),        SHOULD(not be empty after assign));
-  assert_equal(10,x.Length(), SHOULD(have length 10 chars));
+  assert_equal(10, x.Length(),SHOULD(have length 10 chars));
 }
 
 TEST(Can find position of a substring) {
@@ -115,7 +121,7 @@ TEST(AnsiStrings support printf) {
 }
 
 //--------------------------------------------
-DECLARE_SUITE(StringListTests)
+DECLARE_SUITE(StringList Tests)
 
 TEST(StringLists can be created) {
   assert(new TStringList() != NULL,            SHOULD(create empty TStringList));
@@ -167,9 +173,4 @@ TEST(The elements of a StringList can be accessed) {
   assert_equal("Three",x.Strings(2).c_str(), SHOULD(contain Three));
   assert_equal("Four", x.Strings(3).c_str(), SHOULD(contain Four));
   assert_equal("",     x.Strings(4).c_str(), SHOULD(contain nothing));
-}
-
-// ----------------------------
-int RunVCLTests(void) {
-	return RUN_TESTS();
 }

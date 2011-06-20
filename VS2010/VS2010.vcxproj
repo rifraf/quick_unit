@@ -74,6 +74,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Compiler.cpp" />
     <ClCompile Include="VCLTests.cpp" />
     <ClCompile Include="VS2010.cpp" />
   </ItemGroup>

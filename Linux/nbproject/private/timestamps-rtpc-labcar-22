@@ -1,18 +1,21 @@
-#Sun Jun 19 18:48:08 BST 2011
-v\:\\quick_unit\\linux\\vcltests.cpp=t1308505300534
-v\:\\quick_unit\\linux\\nbproject\\project.xml=t1308505538922
-v\:\\quick_unit\\linux\\makefile=c1308393856967
-v\:\\quick_unit\\quick_unit_netbeans.hpp=t1308490056903
-v\:\\quick_unit\\linux\\nbproject\\makefile-debug.mk=c1308505538311
-v\:\\quick_unit\\linux\\nbproject\\makefile-variables.mk=c1308505538325
-v\:\\quick_unit\\linux\\nbproject\\makefile-impl.mk=c1308505538290
-v\:\\quick_unit\\quick_unit.hpp=c1308505665096
-v\:\\quick_unit\\code_under_test\\vcl.h=c1308394524458
-v\:\\quick_unit\\linux\\linux.cpp=c1308505507040
-v\:\\quick_unit\\linux\\nbproject\\makefile-release.mk=t1308505538319
-v\:\\quick_unit\\linux\\nbproject\\package-release.bash=t1308505538322
-v\:\\quick_unit\\linux\\nbproject\\package-debug.bash=t1308505538314
+#Mon Jun 20 15:31:42 BST 2011
+v\:\\quick_unit\\linux\\nbproject\\configurations.xml=t1308580294446
+v\:\\quick_unit\\linux\\nbproject\\makefile-debug.mk=c1308580294485
 v\:\\quick_unit\\linux\\nbproject\\project.properties=t1308393856782
-v\:\\quick_unit\\code_under_test\\vcl.cpp=c1308394523594
-v\:\\quick_unit\\linux\\nbproject\\configurations.xml=t1308505537759
+v\:\\quick_unit\\quick_unit.hpp=c1308579055861
+v\:\\quick_unit\\linux\\tests\\vcltests.cpp=t1308505300534
+v\:\\quick_unit\\linux\\vcltests.cpp=c1308505300534
+v\:\\quick_unit\\linux\\linux.cpp=c1308580127281
+v\:\\quick_unit\\linux\\nbproject\\makefile-impl.mk=c1308580294481
+v\:\\quick_unit\\linux\\nbproject\\package-debug.bash=t1308580294486
+v\:\\quick_unit\\code_under_test\\vcl.h=c1308567303941
+v\:\\quick_unit\\linux\\tests\\moreexamples.cpp=c1308580250219
+v\:\\quick_unit\\linux\\makefile=c1308393856967
+v\:\\quick_unit\\linux\\nbproject\\project.xml=t1308580294519
+v\:\\quick_unit\\linux\\nbproject\\makefile-release.mk=t1308580294490
+v\:\\quick_unit\\mingw_netbeans\\tests\\vcltests.cpp=t1308567518505
 VERSION=1.2
+v\:\\quick_unit\\linux\\nbproject\\package-release.bash=t1308580294492
+v\:\\quick_unit\\linux\\nbproject\\makefile-variables.mk=c1308580294493
+v\:\\quick_unit\\code_under_test\\vcl.cpp=c1308567218936
+v\:\\quick_unit\\quick_unit_netbeans.hpp=c1308507479708

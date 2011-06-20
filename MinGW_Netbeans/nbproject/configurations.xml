@@ -18,6 +18,7 @@
                    displayName="Source Files"
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
+      <itemPath>Compiler.cpp</itemPath>
       <itemPath>MinGW.cpp</itemPath>
       <itemPath>../code_under_test/vcl.cpp</itemPath>
     </logicalFolder>
@@ -32,7 +33,7 @@
         <itemPath>tests/MoreExamples.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="VCLTests" projectFiles="true" kind="TEST">
-        <itemPath>VCLTests.cpp</itemPath>
+        <itemPath>tests/VCLTests.cpp</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"

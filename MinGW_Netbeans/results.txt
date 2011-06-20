@@ -1,6 +1,6 @@
 
 ====================================================
-Starting MyFirstTests at Mon Jun 20 13:02:10 2011
+Starting My First Tests at Mon Jun 20 16:14:12 2011
 
 Test: the compiler can add => OK.
 Test: the compiler can subtract => FAILED. line 14: Should subtract numbers (Expected: 11, got: 1) (Expected: 11, got: 1)
@@ -11,16 +11,16 @@ I am on line 19
 ------------
 
 ----------------------------------------------------
-Finished MyFirstTests at Mon Jun 20 13:02:10 2011
+Finished My First Tests at Mon Jun 20 16:14:12 2011
 Passes: 1 Fails: 2
 ----------------------------------------------------
 
 ====================================================
-Starting Compiler Tests at Mon Jun 20 13:02:10 2011
+Starting Compiler Tests at Mon Jun 20 16:14:12 2011
 
 Test: Compiler checks => OK.
 
 ----------------------------------------------------
-Finished Compiler Tests at Mon Jun 20 13:02:10 2011
-Passes: 1 Fails: 2
+Finished Compiler Tests at Mon Jun 20 16:14:12 2011
+Passes: 1 Fails: 0
 ----------------------------------------------------

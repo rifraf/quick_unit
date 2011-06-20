@@ -1,0 +1,57 @@
+
+====================================================
+Starting Compiler Tests at Mon Jun 20 16:19:26 2011
+
+Test: Compiler checks => OK.
+
+----------------------------------------------------
+Finished Compiler Tests at Mon Jun 20 16:19:26 2011
+Passes: 1 Fails: 0
+----------------------------------------------------
+
+====================================================
+Starting AnsiString Tests at Mon Jun 20 16:19:26 2011
+
+Test: AnsiStrings can be created => OK.
+Test: AnsiString content can be read => OK.
+Test: AnsiString content can be assigned => OK.
+Test: AnsiString content can be compared => OK.
+Test: AnsiStrings can be added => OK.
+Test: AnsiStrings can be appended => OK.
+Test: AnsiStrings have size => OK.
+Test: Can find position of a substring => OK.
+Test: AnsiStrings can extract a sub string => OK.
+Test: AnsiStrings can change case => OK.
+Test: AnsiStrings can parse for integers => OK.
+Test: AnsiStrings support printf => OK.
+
+----------------------------------------------------
+Finished AnsiString Tests at Mon Jun 20 16:19:26 2011
+Passes: 12 Fails: 0
+----------------------------------------------------
+
+====================================================
+Starting StringList Tests at Mon Jun 20 16:19:26 2011
+
+Test: StringLists can be created => OK.
+Test: StringLists can contain text => OK.
+Test: Adding to StringLists gives newline separators => OK.
+Test: A StringList can be cleared => OK.
+Test: A StringList has countable elements => OK.
+Test: The elements of a StringList can be accessed => OK.
+
+----------------------------------------------------
+Finished StringList Tests at Mon Jun 20 16:19:26 2011
+Passes: 6 Fails: 0
+----------------------------------------------------
+
+====================================================
+Starting My First Tests at Mon Jun 20 16:19:26 2011
+
+Test: the compiler can add => OK.
+Test: the compiler can subtract => FAILED. line 15: Should subtract numbers (Expected: 11, got: 1) (Expected: 11, got: 1)
+
+----------------------------------------------------
+Finished My First Tests at Mon Jun 20 16:19:26 2011
+Passes: 1 Fails: 1
+----------------------------------------------------

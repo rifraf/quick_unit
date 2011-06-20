@@ -41,6 +41,7 @@ TESTDIR=build/${CND_CONF}/${CND_PLATFORM}/tests
 
 # Test Files
 TESTFILES= \
+	${TESTDIR}/TestFiles/f2 \
 	${TESTDIR}/TestFiles/f1
 
 # C Compiler Flags
@@ -80,14 +81,23 @@ ${OBJECTDIR}/Linux.o: Linux.cpp
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
-${TESTDIR}/TestFiles/f1: ${TESTDIR}/VCLTests.o ${OBJECTFILES:%.o=%_nomain.o}
+${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/MoreExamples.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc} -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
+
+${TESTDIR}/TestFiles/f1: ${TESTDIR}/.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
 
 
-${TESTDIR}/VCLTests.o: VCLTests.cpp 
-	${MKDIR} -p ${TESTDIR}
-	$(COMPILE.cc) -g -I. -o ${TESTDIR}/VCLTests.o VCLTests.cpp
+${TESTDIR}/tests/MoreExamples.o: tests/MoreExamples.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	$(COMPILE.cc) -g -I. -o ${TESTDIR}/tests/MoreExamples.o tests/MoreExamples.cpp
+
+
+${TESTDIR}/_ext/1636585060/VCLTests.o: ../MinGW_Netbeans/tests/VCLTests.cpp 
+	${MKDIR} -p ${TESTDIR}/_ext/1636585060
+	$(COMPILE.cc) -g -I. -I. -o ${TESTDIR}/_ext/1636585060/VCLTests.o ../MinGW_Netbeans/tests/VCLTests.cpp
 
 
 ${OBJECTDIR}/_ext/194468644/vcl_nomain.o: ${OBJECTDIR}/_ext/194468644/vcl.o ../code_under_test/vcl.cpp 
@@ -118,6 +128,7 @@ ${OBJECTDIR}/Linux_nomain.o: ${OBJECTDIR}/Linux.o Linux.cpp
 .test-conf:
 	@if [ "${TEST}" = "" ]; \
 	then  \
+	    ${TESTDIR}/TestFiles/f2 || true; \
 	    ${TESTDIR}/TestFiles/f1 || true; \
 	else  \
 	    ./${TEST} || true; \

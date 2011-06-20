@@ -11,21 +11,20 @@ TEST(the compiler can add) {
 }
 
 TEST(the compiler can subtract) {
-  assert_equal(1 , 2 - 1, SHOULD(subtract numbers));
+  assert_equal(11 , 2 - 1, SHOULD(subtract numbers)); // Whoops!
 }
 
 // ----------------------------
-DECLARE_SUITE(CompilerTests)
-
-TEST(Compiler checks) {
-  assert(_MSC_VER != 0,			    SHOULD(be true in Visual Studio 2005));
-  assert_equal(1400 , _MSC_VER, SHOULD(be 1400 in Visual Studio 2005));
-}
-
-extern int RunVCLTests(void);
-// ----------------------------
+#include <fstream>
+#include <memory>
+using namespace std;
 int main(int argc, char *argv[]) {
 	printf("Hello quick_unit!\n");
-	return RUN_TESTS() + RunVCLTests();
+  RUN_TESTS();  // To default std::cout
+  
+  auto_ptr<ofstream> results_file(new ofstream("results.txt"));
+  TEST_OUTPUT(*results_file);
+  int fails = RUN_TESTS(); // To file results.txt
+	printf("Fails: %d\n", fails);
+	return fails;
 }
-

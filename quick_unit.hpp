@@ -158,14 +158,11 @@ public:
       << text
       << "------------" << std::endl;
   }
-
 };
 
-namespace {
 /******************************************************************************/
 class QUTestSuiteTracker {
 /******************************************************************************/
-
 public:
   // Used to track the current QUTestSuite.
   // It is a glorified global variable.
@@ -198,9 +195,7 @@ public:
     }
     return current;
   }
-
 };
-}
 
 /******************************************************************************/
 class QUTestFail {
@@ -355,9 +350,9 @@ public:
     _tests.push_back(test);
   }  
   int RunAll(void) {
-    unsigned fails = 0;
+    unsigned total_fails = 0;
     if (_chain) {
-      fails += _chain->RunAll();
+      total_fails += _chain->RunAll();
     }
     std::list<QUReporter *> reporters;
     QUReporter *r = _reporter;
@@ -366,6 +361,7 @@ public:
       r = r->chain();
     }
     unsigned passes = 0;
+    unsigned fails = 0;
     int suite_start = clock();
 
     #define EACH_QUREPORTER(op) for (std::list<QUReporter *>::iterator qfiter = reporters.begin(); qfiter != reporters.end(); ++qfiter) {(*qfiter)->op; }
@@ -392,6 +388,7 @@ public:
       double duration = (clock() - test_start) / 1000.0;
       if (failed || (*iter)->fails()) {
         fails++;
+        total_fails++;
 				EACH_QUREPORTER_REVERSE(FailedTest(_suite_name, test_name, duration, (*iter)->fail_message()))
       } else {
 				passes++;
@@ -406,7 +403,7 @@ public:
 		EACH_QUREPORTER_REVERSE(StoppingSuite(_suite_name))
     AfterAllTests();
 		EACH_QUREPORTER_REVERSE(CompletedSuite(_suite_name, (clock() - suite_start) / 1000.0, passes, fails))
-    return fails;
+    return total_fails;
   }
 };
 
@@ -417,8 +414,7 @@ public:
 #define _UNIQ_ID_(x) _UNIQ_ID_1(x,  __LINE__ )
 
 // MUST be on a single line
-#define TEST(name) \
-namespace  { class _UNIQ_ID_(QUTest) : public QUTest {public: _UNIQ_ID_(QUTest)() : QUTest(#name) {if (QUTestSuiteTracker::CurrentQUTestSuite()) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);}} void Run(void); } static _UNIQ_ID_(test);} void _UNIQ_ID_(QUTest)::Run(void)
+#define TEST(name) namespace { class _UNIQ_ID_(QUTest) : public QUTest {public: _UNIQ_ID_(QUTest)() : QUTest(#name) {if (QUTestSuiteTracker::CurrentQUTestSuite()) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);}} void Run(void); } static _UNIQ_ID_(test);} void _UNIQ_ID_(QUTest)::Run(void)
 
 /******************************************************************************/
 /* Macros for creating a SHOULD message */
@@ -429,10 +425,10 @@ namespace  { class _UNIQ_ID_(QUTest) : public QUTest {public: _UNIQ_ID_(QUTest)(
 /******************************************************************************/
 /* Macros for creating a SUITE */
 #define BEGIN_SUITE(name) \
-using namespace quick_unit; \
+using namespace quick_unit; namespace {\
 class _UNIQ_ID_(QUSuite) : public QUTestSuite{ public: _UNIQ_ID_(QUSuite)() : QUTestSuite(#name) {}
-#define END_SUITE_AS(name) } static name;
-#define END_SUITE } static _UNIQ_ID_(QUSuite);
+#define END_SUITE_AS(name) } static name; }
+#define END_SUITE } static _UNIQ_ID_(QUSuite); }
 #define DECLARE_SUITE(name) BEGIN_SUITE(name) END_SUITE
 
 #define SETUP_SUITE void BeforeAllTests()

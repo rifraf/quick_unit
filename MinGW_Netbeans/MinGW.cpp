@@ -4,7 +4,7 @@
 #include "../quick_unit.hpp"
 
 // ----------------------------
-DECLARE_SUITE(MyFirstTests)
+DECLARE_SUITE(My First Tests)
 
 TEST(the compiler can add) {
   assert(3 == 1 + 2,			SHOULD(add numbers));
@@ -17,14 +17,6 @@ TEST(the compiler can subtract) {
 TEST(we can output text in a test) {
   Output() << "I am in test '" << name() << "'" << std::endl;
   printf("I am on line %d\n", __LINE__);
-}
-
-// ----------------------------
-DECLARE_SUITE(Compiler Tests)
-
-TEST(Compiler checks) {
-  assert(__GNUC__ != 0,			 SHOULD(be true my MinGW));
-  assert_equal(3 , __GNUC__, SHOULD(be 3 in my MinGW));
 }
 
 // ----------------------------
