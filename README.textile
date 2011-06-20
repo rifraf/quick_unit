@@ -31,6 +31,35 @@ int main(int argc, char *argv[]) {
 
 The SHOULD elements are optional, but you _should_ use them...
 
+h2. Sample output
+
+<pre><code>====================================================
+Starting My First Tests at Mon Jun nn hh:mm:ss yyyy
+
+Test: the compiler can add => OK.
+Test: the compiler can subtract => FAILED. line 14: Should subtract numbers (Expected: 11, got: 1)
+Test: we can output text in a test => FAILED. No assertions were executed
+-- Output --
+I am in test 'we can output text in a test'
+I am on line 19
+------------
+
+----------------------------------------------------
+Finished My First Tests at Mon Jun nn hh:mm:ss yyyy
+Passes: 1 Fails: 2
+----------------------------------------------------
+
+====================================================
+Starting Compiler Tests at Mon Jun nn hh:mm:ss yyyy
+
+Test: Compiler checks => OK.
+
+----------------------------------------------------
+Finished Compiler Tests at Mon Jun nn hh:mm:ss yyyy
+Passes: 1 Fails: 0
+----------------------------------------------------
+</code></pre>
+
 h1. Installation
 
 Just copy @quick_unit.hpp@ into your project.
@@ -63,15 +92,19 @@ h2. Assertions
 
 h2. assert
 
-@assert(<truth>[, <message>])@ : fails the test if @<truth>@ is not true. The optional @<message>@ can be a @char *@, but it is better to use the @SHOULD()@ macro, because that binds the message with the line number for reporting purposes.
+@assert(<truth>[, <message>])@ fails the test if @<truth>@ is not true. The optional @<message>@ can be a @char *@, but it is better to use the @SHOULD()@ macro, because that binds the message with the line number for reporting purposes.
 
 h2. assert_equal
 
-@assert_equal(<expected>, <actual>[, <message>])@ : fails the test unless @<expected> == <actual>@. @assert_equal@ uses @==@ to do the match, so custom types and classes can be compared if @==@ is supported. For reporting purposes, they must also be able to emit to a std::ostream.
+@assert_equal(<expected>, <actual>[, <message>])@ fails the test unless @<expected> == <actual>@.
+
+@assert_equal@ uses @==@ to do the match, so custom types and classes can be compared if @==@ is supported. For reporting purposes, they must also be able to emit to a std::ostream.
 
 h2. assert_not_equal
 
-@assert_not_equal(<expected>, <actual>[, <message>])@ : fails the test unless @<expected> != <actual>@. @assert_equal@ uses @!=@ to do the match, so the same rules as above apply to custom types.
+@assert_not_equal(<expected>, <actual>[, <message>])@ fails the test unless @<expected> != <actual>@.
+
+@assert_equal@ uses @!=@ to do the match, so the same rules as above apply to custom types.
 
 h2. Test setup and teardown
 
@@ -81,10 +114,8 @@ A slightly expanded suite declaration is needed for this, as shown below. You ca
 
 <pre><code>BEGIN_SUITE(Setup and teardown)
   Wibble *thing;
-
   SETUP    { thing = new Wibble(); }
   TEARDOWN { delete thing; }
-
 END_SUITE_AS(suite)
 
 TEST(First test) {
