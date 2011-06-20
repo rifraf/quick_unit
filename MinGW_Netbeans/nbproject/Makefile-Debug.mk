@@ -41,6 +41,7 @@ TESTDIR=build/${CND_CONF}/${CND_PLATFORM}/tests
 
 # Test Files
 TESTFILES= \
+	${TESTDIR}/TestFiles/f2 \
 	${TESTDIR}/TestFiles/f1
 
 # C Compiler Flags
@@ -80,14 +81,23 @@ ${OBJECTDIR}/MinGW.o: MinGW.cpp
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
+${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/UltraSlim.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc} -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
+
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/VCLTests.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
 
 
+${TESTDIR}/tests/UltraSlim.o: tests/UltraSlim.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	$(COMPILE.cc) -g -I. -o ${TESTDIR}/tests/UltraSlim.o tests/UltraSlim.cpp
+
+
 ${TESTDIR}/VCLTests.o: VCLTests.cpp 
 	${MKDIR} -p ${TESTDIR}
-	$(COMPILE.cc) -g -I. -o ${TESTDIR}/VCLTests.o VCLTests.cpp
+	$(COMPILE.cc) -g -I. -I. -o ${TESTDIR}/VCLTests.o VCLTests.cpp
 
 
 ${OBJECTDIR}/_ext/194468644/vcl_nomain.o: ${OBJECTDIR}/_ext/194468644/vcl.o ../code_under_test/vcl.cpp 
@@ -118,6 +128,7 @@ ${OBJECTDIR}/MinGW_nomain.o: ${OBJECTDIR}/MinGW.o MinGW.cpp
 .test-conf:
 	@if [ "${TEST}" = "" ]; \
 	then  \
+	    ${TESTDIR}/TestFiles/f2 || true; \
 	    ${TESTDIR}/TestFiles/f1 || true; \
 	else  \
 	    ./${TEST} || true; \

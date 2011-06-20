@@ -150,11 +150,11 @@ class DefaultReporter : public QUReporter { // The default test reporter
 /******************************************************************************/
 public:
 	void StartingSuite(const std::string &suite_name) {
-    Output() << std::endl << "----------------------------------------------------" << std::endl << "Starting " << suite_name << " at " << QUReporter::current_time() << std::endl;
+    Output() << std::endl << "====================================================" << std::endl << "Starting " << suite_name << " at " << QUReporter::current_time() << std::endl;
 	}
 	void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
-    Output() << std::endl << "====================================================" << std::endl << "Finished " << suite_name << " at " << QUReporter::current_time() <<
-			"Passes: " << passes << " Fails: " << fails << std::endl;
+    Output() << std::endl << "----------------------------------------------------" << std::endl << "Finished " << suite_name << " at " << QUReporter::current_time() <<
+			"Passes: " << passes << " Fails: " << fails << std::endl << "----------------------------------------------------" << std::endl;
 	}
 	void StartingTest(const std::string &suite_name, const std::string &test_name) {
     Output() << "Test: " << test_name << " => ";
@@ -174,6 +174,7 @@ public:
 
 };
 
+namespace {
 /******************************************************************************/
 class QUTestSuiteTracker {
 /******************************************************************************/
@@ -212,6 +213,7 @@ public:
   }
 
 };
+}
 
 /******************************************************************************/
 class QUTestFail {
@@ -361,8 +363,9 @@ public:
     _tests.push_back(test);
   }  
   int RunAll(void) {
+    unsigned fails = 0;
     if (_chain) {
-      _chain->RunAll();
+      fails += _chain->RunAll();
     }
     std::list<QUReporter *> reporters;
     QUReporter *r = _reporter;
@@ -370,7 +373,6 @@ public:
       reporters.push_back(r);
       r = r->chain();
     }
-    unsigned fails = 0;
     unsigned passes = 0;
     int suite_start = clock();
 
@@ -424,7 +426,7 @@ public:
 
 // MUST be on a single line
 #define TEST(name) \
-namespace  { class _UNIQ_ID_(QUTest) : public QUTest {public: _UNIQ_ID_(QUTest)() : QUTest(#name) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);} void Run(void); } static _UNIQ_ID_(test);} void _UNIQ_ID_(QUTest)::Run(void)
+namespace  { class _UNIQ_ID_(QUTest) : public QUTest {public: _UNIQ_ID_(QUTest)() : QUTest(#name) {if (QUTestSuiteTracker::CurrentQUTestSuite()) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);}} void Run(void); } static _UNIQ_ID_(test);} void _UNIQ_ID_(QUTest)::Run(void)
 
 /******************************************************************************/
 /* Macros for creating a SHOULD message */
