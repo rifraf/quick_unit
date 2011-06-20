@@ -1,0 +1,26 @@
+
+====================================================
+Starting My First Tests at Mon Jun 20 17:27:27 2011
+
+Test: the compiler can add => OK.
+Test: the compiler can subtract => FAILED. line 15: Should subtract numbers (Expected: 11, got: 1) (Expected: 11, got: 1)
+Test: we can output text in a test => FAILED. No assertions were executed
+-- Output --
+I am in test 'we can output text in a test'
+I am on line 20
+------------
+
+----------------------------------------------------
+Finished My First Tests at Mon Jun 20 17:27:27 2011
+Passes: 1 Fails: 2
+----------------------------------------------------
+
+====================================================
+Starting Compiler Tests at Mon Jun 20 17:27:27 2011
+
+Test: Compiler checks => OK.
+
+----------------------------------------------------
+Finished Compiler Tests at Mon Jun 20 17:27:27 2011
+Passes: 1 Fails: 0
+----------------------------------------------------

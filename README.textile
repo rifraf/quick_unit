@@ -34,7 +34,7 @@ The SHOULD elements are optional, but you _should_ use them...
 h2. Sample output
 
 <pre><code>====================================================
-Starting My First Tests at Mon Jun nn hh:mm:ss yyyy
+Starting My First Tests at Mon Jun dd hh:mm:ss yyyy
 
 Test: the compiler can add => OK.
 Test: the compiler can subtract => FAILED. line 14: Should subtract numbers (Expected: 11, got: 1)
@@ -45,17 +45,17 @@ I am on line 19
 ------------
 
 ----------------------------------------------------
-Finished My First Tests at Mon Jun nn hh:mm:ss yyyy
+Finished My First Tests at Mon Jun dd hh:mm:ss yyyy
 Passes: 1 Fails: 2
 ----------------------------------------------------
 
 ====================================================
-Starting Compiler Tests at Mon Jun nn hh:mm:ss yyyy
+Starting Compiler Tests at Mon Jun dd hh:mm:ss yyyy
 
 Test: Compiler checks => OK.
 
 ----------------------------------------------------
-Finished Compiler Tests at Mon Jun nn hh:mm:ss yyyy
+Finished Compiler Tests at Mon Jun dd hh:mm:ss yyyy
 Passes: 1 Fails: 0
 ----------------------------------------------------
 </code></pre>
@@ -201,10 +201,11 @@ Tested on:
  *  Visual Studio 2005
  *  MinGW GCC (5.16)
  *  Debian Linux
+ *  Ubuntu
 
 Example files are held in the repository to show examples of tests on differing platforms.
 
-The MinGW and Linux versions are built using Netbeans and emit results in the Netbeans 'Simple Test' format. They therefore integrate well as standalone tests within an overall C++ project.
+The MinGW, Ubuntu and Linux versions are built using Netbeans and emit results in the Netbeans 'Simple Test' format. They therefore integrate well as standalone tests within an overall C++ project.
 
 h1. License
 
