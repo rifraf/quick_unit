@@ -95,7 +95,7 @@ ${OBJECTDIR}/main2.o: main2.cpp
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
-${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/MoreExamples.o ${OBJECTFILES:%.o=%_nomain.o}
+${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/MoreExamples.o ${TESTDIR}/tests/RequireSyntax.o ${TESTDIR}/tests/VerifySyntax.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
 
@@ -107,13 +107,25 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/VCLTests.o ${OBJECTFILES:%.o=%_nomain.
 ${TESTDIR}/tests/MoreExamples.o: tests/MoreExamples.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/MoreExamples.o tests/MoreExamples.cpp
+	$(COMPILE.cc) -O2 -I. -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/MoreExamples.o tests/MoreExamples.cpp
+
+
+${TESTDIR}/tests/RequireSyntax.o: tests/RequireSyntax.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I. -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/RequireSyntax.o tests/RequireSyntax.cpp
+
+
+${TESTDIR}/tests/VerifySyntax.o: tests/VerifySyntax.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I. -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/VerifySyntax.o tests/VerifySyntax.cpp
 
 
 ${TESTDIR}/tests/VCLTests.o: tests/VCLTests.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/VCLTests.o tests/VCLTests.cpp
+	$(COMPILE.cc) -O2 -I. -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/VCLTests.o tests/VCLTests.cpp
 
 
 ${OBJECTDIR}/_ext/194468644/vcl_nomain.o: ${OBJECTDIR}/_ext/194468644/vcl.o ../code_under_test/vcl.cpp 

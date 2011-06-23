@@ -75,7 +75,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Compiler.cpp" />
+    <ClCompile Include="RequireSyntax.cpp" />
     <ClCompile Include="VCLTests.cpp" />
+    <ClCompile Include="VerifySyntax.cpp" />
     <ClCompile Include="VS2010.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

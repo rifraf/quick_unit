@@ -7,6 +7,7 @@
                    kind="SOURCE_LOGICAL_FOLDER">
       <itemPath>../quick_unit.hpp</itemPath>
       <itemPath>../quick_unit_netbeans.hpp</itemPath>
+      <itemPath>../quick_unit_req_syntax.hpp</itemPath>
       <itemPath>../code_under_test/vcl.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -30,9 +31,11 @@
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/MoreExamples.cpp</itemPath>
+        <itemPath>tests/RequireSyntax.cpp</itemPath>
+        <itemPath>tests/VerifySyntax.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="VCLTests" projectFiles="true" kind="TEST">
-        <itemPath>../MinGW_Netbeans/tests/VCLTests.cpp</itemPath>
+        <itemPath>tests/VCLTests.cpp</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -57,10 +60,12 @@
           <incDir>
             <pElem>.</pElem>
             <pElem>.</pElem>
+            <pElem>.</pElem>
           </incDir>
         </cTool>
         <ccTool>
           <incDir>
+            <pElem>.</pElem>
             <pElem>.</pElem>
             <pElem>.</pElem>
           </incDir>
@@ -73,10 +78,12 @@
         <cTool>
           <incDir>
             <pElem>.</pElem>
+            <pElem>.</pElem>
           </incDir>
         </cTool>
         <ccTool>
           <incDir>
+            <pElem>.</pElem>
             <pElem>.</pElem>
           </incDir>
         </ccTool>
@@ -110,10 +117,12 @@
           <incDir>
             <pElem>.</pElem>
             <pElem>.</pElem>
+            <pElem>.</pElem>
           </incDir>
         </cTool>
         <ccTool>
           <incDir>
+            <pElem>.</pElem>
             <pElem>.</pElem>
             <pElem>.</pElem>
           </incDir>
@@ -126,10 +135,12 @@
         <cTool>
           <incDir>
             <pElem>.</pElem>
+            <pElem>.</pElem>
           </incDir>
         </cTool>
         <ccTool>
           <incDir>
+            <pElem>.</pElem>
             <pElem>.</pElem>
           </incDir>
         </ccTool>

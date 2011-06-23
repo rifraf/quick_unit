@@ -1,8 +1,9 @@
 /* 
- * File:   quick_unit_reqtrace.hpp
- * Author: David
+ * quick_unit.hpp : http://github.com/rifraf/quick_unit
+ * Author: David Lake
  *
- * Created on 20 June 2011, 19:48
+ * Description:
+ *  Experimental requirement tracing support
  */
 
 #ifndef QUICK_UNIT_REQTRACE_HPP
@@ -109,7 +110,6 @@ class QUTestReqs : public quick_unit::QU_TEST_ANCESTOR {
       }
       va_end(param_list);
     }
-    quick_unit::Requirer requirer;
 };
 #define TESTS(...) _Tests( __VA_ARGS__, NULL)
 

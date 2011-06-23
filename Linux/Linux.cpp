@@ -15,7 +15,7 @@ TEST(the compiler can subtract) {
 }
 
 TEST(we can output text in a test) {
-  Output() << "I am in test '" << name() << "'" << std::endl;
+  Output() << "I am in test '" << test_name() << "'" << std::endl;
   printf("I am on line %d\n", __LINE__);
 }
 

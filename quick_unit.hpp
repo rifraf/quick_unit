@@ -237,6 +237,7 @@ protected:
   std::string _test_name;
   std::string _fail_message;
   std::ostringstream _info_message;
+	std::ostringstream _expectation_builder;
   std::string _full_message;
   std::ostringstream _output;
   std::string _output_message;
@@ -309,61 +310,62 @@ public:
     return count;
   }
 
+	Qu_Result result(bool truth, const std::string expectation) {
+		Qu_Result X = {truth, _expectation};
+    return X;
+	}
+
   // Result matcher: truth
   Qu_Result is_true(bool truth) {
     if (!truth) {
-      std::ostringstream os;
-      os << " (Expected result was not true)";
-      _expectation = os.str();
+      _expectation = " (Expected result was not true)";
     }
-    return (Qu_Result){truth, _expectation};
+		return result(truth, _expectation);
   }
   // Result matcher: falsity
   Qu_Result is_false(bool truth) {
     if (truth) {
-      std::ostringstream os;
-      os << " (Expected result was not false)";
-      _expectation = os.str();
+      _expectation = " (Expected result was not false)";
     }
-    return (Qu_Result){!truth, _expectation};
+		return result(!truth, _expectation);
   }
   // Result matchers: Equality
   template <class T> Qu_Result equal(const T& a, const T& b) {
     bool truth = (a == b);
     if (!truth) {
-      std::ostringstream os;
-      os << " (Expected: " << a << ", got: " << b << ")";
-      _expectation = os.str();
+      _expectation_builder.str("");
+			_expectation_builder << " (Expected: " << a << ", got: " << b << ")";
+      _expectation = _expectation_builder.str();
     }
-    return (Qu_Result){truth, _expectation};
+		return result(truth, _expectation);
   }
   Qu_Result equal(const char *a, const char *b) {
     bool truth = (strcmp(a,b) == 0);
     if (!truth) {
-      std::ostringstream os;
-      os << " (Expected: " << a << ", got: " << b << ")";
-      _expectation = os.str();
+      _expectation_builder.str("");
+			_expectation_builder << " (Expected: " << a << ", got: " << b << ")";
+      _expectation = _expectation_builder.str();
     }
-    return (Qu_Result){truth, _expectation};
+		return result(truth, _expectation);
   }
   // Result matchers: Inequality
   template <class T> Qu_Result not_equal(const T& a, const T& b) {
     bool truth = (a != b);
     if (!truth) {
-      std::ostringstream os;
-      os << " (Expected difference. Both: " << a << ")";
-      _expectation = os.str();
+      _expectation_builder.str("");
+			_expectation_builder << " (Expected difference. Both: " << a << ")";
+      _expectation = _expectation_builder.str();
     }
-    return (Qu_Result){truth, _expectation};
+		return result(truth, _expectation);
   }
   Qu_Result not_equal(const char *a, const char *b) {
     bool truth = (strcmp(a,b) != 0);
     if (!truth) {
-      std::ostringstream os;
-      os << " (Expected difference. Both: " << a << ")";
-      _expectation = os.str();
+      _expectation_builder.str("");
+			_expectation_builder << " (Expected difference. Both: " << a << ")";
+      _expectation = _expectation_builder.str();
     }
-    return (Qu_Result){truth, _expectation};
+		return result(truth, _expectation);
   }
 
   // The core assertion handler

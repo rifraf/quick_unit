@@ -33,6 +33,7 @@
 
 namespace quick_unit {
 
+// The Requirer provides support for using the >> syntax in tests
 class Requirer {
   
 protected:
@@ -64,17 +65,29 @@ public:
   }
 
   Requirer& test_truth(bool truth) {
-    _test->_assert((Qu_Result){truth, ""}, truth ? "" : fail_message());
+		Qu_Result result = {truth, ""};
+    _test->_assert(result, truth ? "" : fail_message());
     return *this;
   }
 
   Requirer& test_truth(bool truth, const std::string &msg) {
-    _test->_assert((Qu_Result){truth, ""}, truth ? "" : fail_message(msg));
+		Qu_Result result = {truth, ""};
+    _test->_assert(result, truth ? "" : fail_message(msg));
     return *this;
   }
 
 };
-}
+
+// QUTestRequirer extends a quick_unit test to embed a reference to the current requirer.
+class QUTestRequirer : public quick_unit::QU_TEST_ANCESTOR {
+  public:
+    QUTestRequirer(const char *msg) : quick_unit::QU_TEST_ANCESTOR(msg) {}
+    quick_unit::Requirer current_require;
+};
+#undef QU_TEST_ANCESTOR
+#define QU_TEST_ANCESTOR QUTestRequirer
+
+} /* quick_unit */
 
 quick_unit::Requirer& operator>>(quick_unit::Requirer &requirer, bool truth) {
   return requirer.test_truth(truth);
@@ -82,7 +95,8 @@ quick_unit::Requirer& operator>>(quick_unit::Requirer &requirer, bool truth) {
 quick_unit::Requirer& operator>>(quick_unit::Requirer &requirer, quick_unit::Qu_Result result) {
   return requirer.test_truth(result.pass, result.msg);
 }
-#define REQUIRE(msg) requirer.require(this, __LINE__, "Require '" # msg "'")
+
+#define REQUIRE(msg) current_require.require(this, __LINE__, "Require '" # msg "'")
 
 #endif	/* QUICK_UNIT_REQ_SYNTAX_HPP */
 

@@ -179,7 +179,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RequireSyntax.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\VCLTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\VerifySyntax.cpp"
 				>
 			</File>
 			<File

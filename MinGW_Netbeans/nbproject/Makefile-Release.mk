@@ -87,7 +87,7 @@ ${OBJECTDIR}/Compiler.o: Compiler.cpp
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
-${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/MoreExamples.o ${OBJECTFILES:%.o=%_nomain.o}
+${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/MoreExamples.o ${TESTDIR}/tests/RequireSyntax.o ${TESTDIR}/tests/VerifySyntax.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
 
@@ -103,6 +103,16 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/VCLTests.o ${OBJECTFILES:%.o=%_nomain.
 ${TESTDIR}/tests/MoreExamples.o: tests/MoreExamples.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	$(COMPILE.cc) -O2 -I. -I. -I. -o ${TESTDIR}/tests/MoreExamples.o tests/MoreExamples.cpp
+
+
+${TESTDIR}/tests/RequireSyntax.o: tests/RequireSyntax.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	$(COMPILE.cc) -O2 -I. -I. -I. -o ${TESTDIR}/tests/RequireSyntax.o tests/RequireSyntax.cpp
+
+
+${TESTDIR}/tests/VerifySyntax.o: tests/VerifySyntax.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	$(COMPILE.cc) -O2 -I. -I. -I. -o ${TESTDIR}/tests/VerifySyntax.o tests/VerifySyntax.cpp
 
 
 ${TESTDIR}/tests/ReqTraceTests.o: tests/ReqTraceTests.cpp 

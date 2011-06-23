@@ -1,6 +1,16 @@
 
 ====================================================
-Starting AnsiString Tests at Mon Jun 20 16:23:44 2011
+Starting Compiler Tests at Thu Jun 23 11:21:19 2011
+
+Test: Compiler checks => OK.
+
+----------------------------------------------------
+Finished Compiler Tests at Thu Jun 23 11:21:19 2011
+Passes: 1 Fails: 0
+----------------------------------------------------
+
+====================================================
+Starting AnsiString Tests at Thu Jun 23 11:21:19 2011
 
 Test: AnsiStrings can be created => OK.
 Test: AnsiString content can be read => OK.
@@ -16,12 +26,12 @@ Test: AnsiStrings can parse for integers => OK.
 Test: AnsiStrings support printf => OK.
 
 ----------------------------------------------------
-Finished AnsiString Tests at Mon Jun 20 16:23:44 2011
+Finished AnsiString Tests at Thu Jun 23 11:21:19 2011
 Passes: 12 Fails: 0
 ----------------------------------------------------
 
 ====================================================
-Starting StringList Tests at Mon Jun 20 16:23:44 2011
+Starting StringList Tests at Thu Jun 23 11:21:19 2011
 
 Test: StringLists can be created => OK.
 Test: StringLists can contain text => OK.
@@ -31,27 +41,37 @@ Test: A StringList has countable elements => OK.
 Test: The elements of a StringList can be accessed => OK.
 
 ----------------------------------------------------
-Finished StringList Tests at Mon Jun 20 16:23:44 2011
+Finished StringList Tests at Thu Jun 23 11:21:19 2011
 Passes: 6 Fails: 0
 ----------------------------------------------------
 
 ====================================================
-Starting My First Tests at Mon Jun 20 16:23:44 2011
+Starting My First Tests at Thu Jun 23 11:21:19 2011
 
 Test: the compiler can add => OK.
 Test: the compiler can subtract => FAILED. line 14: Should subtract numbers (Expected: 11, got: 1) (Expected: 11, got: 1)
 
 ----------------------------------------------------
-Finished My First Tests at Mon Jun 20 16:23:44 2011
+Finished My First Tests at Thu Jun 23 11:21:19 2011
 Passes: 1 Fails: 1
 ----------------------------------------------------
 
 ====================================================
-Starting Compiler Tests at Mon Jun 20 16:23:44 2011
+Starting Verify syntax at Thu Jun 23 11:21:19 2011
 
-Test: Compiler checks => OK.
+Test: Experiments: verify syntax => OK.
 
 ----------------------------------------------------
-Finished Compiler Tests at Mon Jun 20 16:23:44 2011
+Finished Verify syntax at Thu Jun 23 11:21:19 2011
+Passes: 1 Fails: 0
+----------------------------------------------------
+
+====================================================
+Starting Require syntax at Thu Jun 23 11:21:19 2011
+
+Test: Experiments: require syntax => OK.
+
+----------------------------------------------------
+Finished Require syntax at Thu Jun 23 11:21:19 2011
 Passes: 1 Fails: 0
 ----------------------------------------------------
