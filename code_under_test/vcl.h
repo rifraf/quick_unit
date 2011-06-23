@@ -10,7 +10,6 @@
 #include <sstream>
 #include <algorithm>
 
-
 #ifdef unix
 typedef unsigned DWORD;
 #include <stdio.h>

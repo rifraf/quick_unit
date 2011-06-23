@@ -213,7 +213,6 @@ public:
     }
     if (cur) {
       if (chain) {
-printf("CHAIN=%x|%\n", cur, current)        ;
         cur->chain(current);
       }
       current = cur;
