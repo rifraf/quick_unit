@@ -51,4 +51,5 @@ private:
   }
 END_REPORTER()
 
+ADDITIONAL_REPORTER(Netbeans)
 #endif /* QUICK_UNIT_NETBEANS_HPP */

@@ -2,8 +2,6 @@
 #include "../code_under_test/vcl.cpp"
 #include "../quick_unit.hpp"
 
-TEST_REPORTER(Default)
-
 //--------------------------------------------
 DECLARE_SUITE(AnsiString Tests)
 

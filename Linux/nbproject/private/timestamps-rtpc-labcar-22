@@ -1,27 +1,27 @@
-#Thu Jun 23 12:00:09 BST 2011
+#Thu Jun 23 13:24:08 BST 2011
 v\:\\quick_unit\\linux\\nbproject\\configurations.xml=t1308826799909
 v\:\\quick_unit\\linux\\nbproject\\makefile-debug.mk=c1308826799936
 v\:\\quick_unit\\linux\\nbproject\\project.properties=t1308393856782
-v\:\\quick_unit\\quick_unit.hpp=c1308823116177
-v\:\\quick_unit\\linux\\tests\\vcltests.cpp=c1308505300534
+v\:\\quick_unit\\quick_unit.hpp=c1308831204056
+v\:\\quick_unit\\linux\\tests\\vcltests.cpp=c1308831534847
 v\:\\quick_unit\\linux\\vcltests.cpp=c1308505300534
 v\:\\quick_unit\\linux\\verifysyntax.cpp=c1308826707904
-v\:\\quick_unit\\quick_unit_req_syntax.hpp=c1308823881713
+v\:\\quick_unit\\quick_unit_req_syntax.hpp=t1308831767712
 v\:\\quick_unit\\linux\\linux.cpp=c1308824649565
 v\:\\quick_unit\\linux\\nbproject\\makefile-impl.mk=c1308826799931
 v\:\\quick_unit\\mingw_netbeans\\tests\\moreexamples.cpp=t1308571000773
-v\:\\quick_unit\\linux\\tests\\verifysyntax.cpp=c1308826721728
+v\:\\quick_unit\\linux\\tests\\verifysyntax.cpp=c1308831528083
 v\:\\quick_unit\\linux\\nbproject\\package-debug.bash=t1308826799946
 v\:\\quick_unit\\code_under_test\\vcl.h=c1308567303941
-v\:\\quick_unit\\linux\\tests\\moreexamples.cpp=c1308580250219
+v\:\\quick_unit\\linux\\tests\\moreexamples.cpp=c1308831546196
 v\:\\quick_unit\\linux\\makefile=c1308393856967
-v\:\\quick_unit\\linux\\tests\\requiresyntax.cpp=c1308826699552
+v\:\\quick_unit\\linux\\tests\\requiresyntax.cpp=c1308831540353
 v\:\\quick_unit\\linux\\nbproject\\project.xml=t1308826799969
 v\:\\quick_unit\\linux\\requiresyntax.cpp=c1308826699552
 v\:\\quick_unit\\linux\\nbproject\\makefile-release.mk=t1308826799950
 v\:\\quick_unit\\mingw_netbeans\\tests\\vcltests.cpp=t1308567518505
 VERSION=1.2
-v\:\\quick_unit\\linux\\nbproject\\package-release.bash=t1308826799951
 v\:\\quick_unit\\linux\\nbproject\\makefile-variables.mk=c1308826799952
+v\:\\quick_unit\\linux\\nbproject\\package-release.bash=t1308826799951
+v\:\\quick_unit\\quick_unit_netbeans.hpp=c1308831410848
 v\:\\quick_unit\\code_under_test\\vcl.cpp=c1308567218936
-v\:\\quick_unit\\quick_unit_netbeans.hpp=c1308507479708

@@ -5,7 +5,6 @@
 #include "../quick_unit.hpp"
 #include "../quick_unit_req_syntax.hpp"
 #include "../quick_unit_netbeans.hpp"
-ADDITIONAL_REPORTER(Netbeans)
 
 // ----------------------------
 DECLARE_SUITE(Require syntax)

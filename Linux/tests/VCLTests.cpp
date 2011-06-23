@@ -2,9 +2,6 @@
 #include "../quick_unit.hpp"
 #include "../quick_unit_netbeans.hpp"
 
-TEST_REPORTER(Default)
-ADDITIONAL_REPORTER(Netbeans)
-
 //--------------------------------------------
 DECLARE_SUITE(AnsiString Tests)
 

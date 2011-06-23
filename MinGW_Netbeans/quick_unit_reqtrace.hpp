@@ -116,5 +116,7 @@ class QUTestReqs : public quick_unit::QU_TEST_ANCESTOR {
 #undef QU_TEST_ANCESTOR
 #define QU_TEST_ANCESTOR QUTestReqs
 
+ADDITIONAL_REPORTER(ReqTrace)
+
 #endif	/* QUICK_UNIT_REQTRACE_HPP */
 

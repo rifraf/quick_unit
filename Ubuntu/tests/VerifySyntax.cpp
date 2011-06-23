@@ -6,7 +6,6 @@
 #define CAN QU_SHOULD
 #include "../quick_unit.hpp"
 #include "../quick_unit_netbeans.hpp"
-ADDITIONAL_REPORTER(Netbeans)
 
 // ----------------------------
 DECLARE_SUITE(Verify syntax)

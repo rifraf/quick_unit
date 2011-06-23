@@ -213,6 +213,7 @@ public:
     }
     if (cur) {
       if (chain) {
+printf("CHAIN=%x|%\n", cur, current)        ;
         cur->chain(current);
       }
       current = cur;
@@ -522,4 +523,6 @@ using namespace quick_unit; namespace  { class QU_UNIQ_ID(QUReporter) : public n
 #define END_REPORTER() }; }
 
 } /* namespace */
+TEST_REPORTER(Default)
+
 #endif	/* QUICK_UNIT_HPP */

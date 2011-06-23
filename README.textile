@@ -29,6 +29,8 @@ int main(int argc, char *argv[]) {
 }
 </code></pre>
 
+If you don't like the use of @assert@, you can change it. See below.
+
 The SHOULD elements are optional, but you _should_ use them...
 
 h2. Sample output
@@ -90,9 +92,35 @@ h1. Advanced features
 
 h2. Assertions
 
+NOTE: Some people don't like to use the word @assert@ in quick_unit because of possible confusion with the @assert@ macro in @assert.h@. You can pick your own verb to use by declaring it as the value to macro QU_ASSERT, before including quick_unit.
+
+<pre><code>#define QU_ASSERT verify
+#define CAN QU_SHOULD
+#include "../quick_unit.hpp"
+
+// ----------------------------
+DECLARE_SUITE(Verify syntax)
+
+TEST(Experiments: verify syntax) {
+  verify(1, CAN(be true));
+  verify_true(1, CAN(be true));
+  verify_false(0, CAN(be false));
+  verify_equal(1, 2-1, CAN(be equal));
+  verify_not_equal(1, 2, CAN(differ));
+}
+</code></pre>
+
 h2. assert
 
 @assert(<truth>[, <message>])@ fails the test if @<truth>@ is not true. The optional @<message>@ can be a @char *@, but it is better to use the @SHOULD()@ macro, because that binds the message with the line number for reporting purposes.
+
+h2. assert_true
+
+@assert_true(<truth>[, <message>])@ is the same as @assert(<truth>[, <message>])@
+
+h2. assert_false
+
+@assert_false(<truth>[, <message>])@ fails the test if the value passed in is not false.
 
 h2. assert_equal
 
