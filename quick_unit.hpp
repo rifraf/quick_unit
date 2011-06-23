@@ -32,9 +32,15 @@
  *
  * Advanced features:
  *
- *  Plugin architecture for reporting allows you to replace
- *  the default output text formatter. Alternatively you can
- *  run additional reporters at the same time. See GitHub/readme.
+ *  If you don't like the use of 'assert' because you might confuse
+ *  it with the macro version in assert.h, then simply define QU_ASSERT
+ *  as your your_word of choice. e.g. #define QU_ASSERT verify.
+ *  If you prefer a different word to SHOULD, just define it to map on to
+ *  QU_SHOULD. e.g. #define CAN QU_SHOULD.
+ *
+ *  A plugin architecture for reporting allows you to replace
+ *  the default output text formatter. You can also chain reporters
+ *  together to run more than one at the same time. See GitHub/readme.
  *
  *  The output stream can be changed from the default std::cout.
  *  See GitHub/readme.
@@ -65,11 +71,29 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#undef assert
 
 namespace quick_unit {
-class QUTest;
+
+typedef struct {
+  bool pass;
+  const std::string &msg;
+} Qu_Result;
+
 class QUTestSuite;
+
+/******************************************************************************/
+// Construction tools
+#define QU_TOKENIZE(m, n) m##n
+#define QU_TOKEN_MERGE(m, n) QU_TOKENIZE(m, n)
+#define QU_STRINGIZE2(x,y) x#y
+#define QU_STRINGIZE(x,y) QU_STRINGIZE2(x,y)
+
+#define QU_UNIQ_ID(x)  QU_TOKEN_MERGE(x,  __LINE__)
+
+#ifndef QU_ASSERT
+ #undef assert
+ #define QU_ASSERT assert
+#endif
 
 /******************************************************************************/
 class QUStdOutTracker {
@@ -216,8 +240,10 @@ protected:
   std::string _full_message;
   std::ostringstream _output;
   std::string _output_message;
-private:
-private:
+  std::string _expectation;
+
+protected:
+  // test printf helper
   int format_arg_list(std::string& out, int length, const char *fmt, va_list args) {
     if (!fmt) return -1;
     int result = 0;
@@ -242,13 +268,29 @@ public:
     _fail_message = "";
     _test_name = msg;
   }
-  virtual void Run(void) = 0;
+  virtual void Run(void) = 0; // Must be subclassed
+  const std::string &test_name() { return _test_name; }
 
-  const std::string &name() { return _test_name; }
-  
+  // Pass/fail tracking
+  int passes() { return _passes; }
+  int fails() {
+    if (_passes + _fails == 0) {
+      _fails = 1; // No asserts - not a valid test. Report as a fail
+    }
+    return _fails;
+  }
+  const std::string &fail_message() {
+    if (_passes + _fails == 0) {
+			_full_message = "No assertions were executed";
+    } else {
+			_full_message = _fail_message + _info_message.str();
+		}
+    return _full_message;
+  }
+
+  // Test output text helpers
+  const std::string &test_output_text() {_output_message = _output.str(); _output.seekp(0, std::ios::beg); return _output_message;}
   std::ostream &Output() {return _output;}
-  const std::string &test_output() {_output_message = _output.str(); _output.seekp(0, std::ios::beg); return _output_message;}
-
   int printf(const char* fmt, ...) {
     int count = 0;
     va_list args;
@@ -267,29 +309,71 @@ public:
     return count;
   }
 
-  int passes() { return _passes; }
-  int fails() {
-    if (_passes + _fails == 0) {
-      return 1; // No asserts - not a valid test. Report as a fail
+  // Result matcher: truth
+  Qu_Result is_true(bool truth) {
+    if (!truth) {
+      std::ostringstream os;
+      os << " (Expected result was not true)";
+      _expectation = os.str();
     }
-    return _fails;
+    return (Qu_Result){truth, _expectation};
+  }
+  // Result matcher: falsity
+  Qu_Result is_false(bool truth) {
+    if (truth) {
+      std::ostringstream os;
+      os << " (Expected result was not false)";
+      _expectation = os.str();
+    }
+    return (Qu_Result){!truth, _expectation};
+  }
+  // Result matchers: Equality
+  template <class T> Qu_Result equal(const T& a, const T& b) {
+    bool truth = (a == b);
+    if (!truth) {
+      std::ostringstream os;
+      os << " (Expected: " << a << ", got: " << b << ")";
+      _expectation = os.str();
+    }
+    return (Qu_Result){truth, _expectation};
+  }
+  Qu_Result equal(const char *a, const char *b) {
+    bool truth = (strcmp(a,b) == 0);
+    if (!truth) {
+      std::ostringstream os;
+      os << " (Expected: " << a << ", got: " << b << ")";
+      _expectation = os.str();
+    }
+    return (Qu_Result){truth, _expectation};
+  }
+  // Result matchers: Inequality
+  template <class T> Qu_Result not_equal(const T& a, const T& b) {
+    bool truth = (a != b);
+    if (!truth) {
+      std::ostringstream os;
+      os << " (Expected difference. Both: " << a << ")";
+      _expectation = os.str();
+    }
+    return (Qu_Result){truth, _expectation};
+  }
+  Qu_Result not_equal(const char *a, const char *b) {
+    bool truth = (strcmp(a,b) != 0);
+    if (!truth) {
+      std::ostringstream os;
+      os << " (Expected difference. Both: " << a << ")";
+      _expectation = os.str();
+    }
+    return (Qu_Result){truth, _expectation};
   }
 
-  const std::string &fail_message() {
-    if (_passes + _fails == 0) {
-			_full_message = "No assertions were executed";
-    } else {
-			_full_message = _fail_message + _info_message.str();
-		}
-    return _full_message;
-  }
-  
-  void assert(bool truth, const char *msg = NULL) {
+  // The core assertion handler
+  void _assert(Qu_Result result, const char *msg = NULL) {
     _assertions++;
-    if (truth) {
+    if (result.pass) {
       _info_message.str("");
       _passes++;
     } else {
+      _info_message << result.msg;
       if (msg) {
         _fail_message = msg;
       } else {
@@ -302,27 +386,17 @@ public:
     }
   }
 
-  template <class T>
-  void assert_equal(const T& a, const T& b, const char *msg = NULL) {
-    _info_message << " (Expected: " << a << ", got: " << b << ")";
-    assert(a == b, msg);
-  }
-
-  template <class T>
-  void assert_not_equal(const T& a, const T& b, const char *msg = NULL) {
-    _info_message << " (Expected difference. Both: " << a << ")";
-    assert(a != b, msg);
-  }
-
-  void assert_equal(const char *a, const char *b, const char *msg = NULL) {
-    _info_message << " (Expected: " << a << ", got: " << b << ")";
-    assert(strcmp(a,b) == 0, msg);
-  }
-
-  void assert_not_equal(const char *a, const char *b, const char *msg = NULL) {
-    _info_message << " (Expected difference. Both: " << a << ")";
-    assert(strcmp(a,b) != 0, msg);
-  }
+  // Assertions
+  // ... true/false
+  void QU_ASSERT(bool truth, const char *msg = NULL) { _assert(is_true(truth), msg); }
+  void QU_TOKEN_MERGE(QU_ASSERT,_true)(bool truth, const char *msg = NULL) {_assert(is_true(truth), msg); }
+  void QU_TOKEN_MERGE(QU_ASSERT,_false)(bool truth, const char *msg = NULL) { _assert(is_false(truth), msg); }
+  // ... equal
+  template <class T> void QU_TOKEN_MERGE(QU_ASSERT,_equal)(const T& a, const T& b, const char *msg = NULL) { _assert(equal(a,b), msg); }
+  void QU_TOKEN_MERGE(QU_ASSERT,_equal)(const char *a, const char *b, const char *msg = NULL) {_assert(equal(a,b), msg);}
+  // ... not equal
+  template <class T> void QU_TOKEN_MERGE(QU_ASSERT,_not_equal)(const T& a, const T& b, const char *msg = NULL) {_assert(not_equal(a,b), msg); }
+  void QU_TOKEN_MERGE(QU_ASSERT,_not_equal)(const char *a, const char *b, const char *msg = NULL) {_assert(not_equal(a,b), msg);}
 };
 
 /******************************************************************************/
@@ -371,7 +445,7 @@ public:
 		EACH_QUREPORTER(StartedSuite(_suite_name))
     for (std::list<QUTest *>::iterator iter = _tests.begin(); iter != _tests.end(); ++iter) {
       bool failed = false;
-      std::string test_name = (*iter)->name();
+      std::string test_name = (*iter)->test_name();
 			EACH_QUREPORTER(StartingTest(_suite_name, test_name))
       int test_start = clock();
       BeforeEachTest();
@@ -394,7 +468,7 @@ public:
 				passes++;
 				EACH_QUREPORTER_REVERSE(PassedTest(_suite_name, test_name, duration))
 			}
-      std::string output = (*iter)->test_output();
+      std::string output = (*iter)->test_output_text();
       if (!output.empty()) {
   			EACH_QUREPORTER_REVERSE(TestOutput(_suite_name, test_name, output))
       }
@@ -409,27 +483,23 @@ public:
 
 /******************************************************************************/
 /* Macros for creating a TEST */
-#define _UNIQ_ID_2(x,y) x##y
-#define _UNIQ_ID_1(x,y) _UNIQ_ID_2(x,y)
-#define _UNIQ_ID_(x) _UNIQ_ID_1(x,  __LINE__ )
+#define QU_TEST_ANCESTOR QUTest
 
 // MUST be on a single line
-#define QU_TEST_ANCESTOR QUTest
-#define TEST(name) namespace { class _UNIQ_ID_(QUTest) : public QU_TEST_ANCESTOR {public: _UNIQ_ID_(QUTest)() : QU_TEST_ANCESTOR(#name) {if (QUTestSuiteTracker::CurrentQUTestSuite()) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);}} void Run(void); } static _UNIQ_ID_(test);} void _UNIQ_ID_(QUTest)::Run(void)
+#define TEST(name) namespace { class QU_UNIQ_ID(QUTest) : public QU_TEST_ANCESTOR {public: QU_UNIQ_ID(QUTest)() : QU_TEST_ANCESTOR(#name) {if (QUTestSuiteTracker::CurrentQUTestSuite()) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);}} void Run(void); } static QU_UNIQ_ID(test);} void QU_UNIQ_ID(QUTest)::Run(void)
 
 /******************************************************************************/
 /* Macros for creating a SHOULD message */
-#define _LINE_PASTE2(x,y) x#y
-#define _LINE_PASTE(x,y) _LINE_PASTE2(x,y)
-#define SHOULD(msg) _LINE_PASTE("line ",__LINE__) ": Should " # msg
+#define QU_SHOULD(msg) QU_STRINGIZE("line ",__LINE__) ": Should " # msg
+#define SHOULD QU_SHOULD
 
 /******************************************************************************/
 /* Macros for creating a SUITE */
 #define BEGIN_SUITE(name) \
 using namespace quick_unit; namespace {\
-class _UNIQ_ID_(QUSuite) : public QUTestSuite{ public: _UNIQ_ID_(QUSuite)() : QUTestSuite(#name) {}
+class QU_UNIQ_ID(QUSuite) : public QUTestSuite{ public: QU_UNIQ_ID(QUSuite)() : QUTestSuite(#name) {}
 #define END_SUITE_AS(name) } static name; }
-#define END_SUITE } static _UNIQ_ID_(QUSuite); }
+#define END_SUITE } static QU_UNIQ_ID(QUSuite); }
 #define DECLARE_SUITE(name) BEGIN_SUITE(name) END_SUITE
 
 #define SETUP_SUITE void BeforeAllTests()
@@ -441,10 +511,10 @@ class _UNIQ_ID_(QUSuite) : public QUTestSuite{ public: _UNIQ_ID_(QUSuite)() : QU
 /******************************************************************************/
 /* Macros for REPORTERs */
 #define TEST_REPORTER(name) \
-using namespace quick_unit; namespace  { class _UNIQ_ID_(QUReporter) : public name ##Reporter { public: _UNIQ_ID_(QUReporter)() { QUTestSuiteTracker::CurrentQUReporter(this);} } static _UNIQ_ID_(Reporter); }
+using namespace quick_unit; namespace  { class QU_UNIQ_ID(QUReporter) : public name ##Reporter { public: QU_UNIQ_ID(QUReporter)() { QUTestSuiteTracker::CurrentQUReporter(this);} } static QU_UNIQ_ID(Reporter); }
 
 #define ADDITIONAL_REPORTER(name) \
-using namespace quick_unit; namespace  { class _UNIQ_ID_(QUReporter) : public name ##Reporter { public: _UNIQ_ID_(QUReporter)() { QUTestSuiteTracker::CurrentQUReporter(this, true);} } static _UNIQ_ID_(Reporter); }
+using namespace quick_unit; namespace  { class QU_UNIQ_ID(QUReporter) : public name ##Reporter { public: QU_UNIQ_ID(QUReporter)() { QUTestSuiteTracker::CurrentQUReporter(this, true);} } static QU_UNIQ_ID(Reporter); }
 
 #define BEGIN_REPORTER(name) namespace quick_unit { class name ##Reporter : public QUReporter { public:
 #define END_REPORTER() }; }

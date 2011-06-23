@@ -109,6 +109,7 @@ class QUTestReqs : public quick_unit::QU_TEST_ANCESTOR {
       }
       va_end(param_list);
     }
+    quick_unit::Requirer requirer;
 };
 #define TESTS(...) _Tests( __VA_ARGS__, NULL)
 

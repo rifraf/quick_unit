@@ -102,17 +102,17 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/VCLTests.o ${OBJECTFILES:%.o=%_nomain.
 
 ${TESTDIR}/tests/MoreExamples.o: tests/MoreExamples.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
-	$(COMPILE.cc) -O2 -I. -I. -o ${TESTDIR}/tests/MoreExamples.o tests/MoreExamples.cpp
+	$(COMPILE.cc) -O2 -I. -I. -I. -o ${TESTDIR}/tests/MoreExamples.o tests/MoreExamples.cpp
 
 
 ${TESTDIR}/tests/ReqTraceTests.o: tests/ReqTraceTests.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
-	$(COMPILE.cc) -O2 -I. -o ${TESTDIR}/tests/ReqTraceTests.o tests/ReqTraceTests.cpp
+	$(COMPILE.cc) -O2 -I. -I. -o ${TESTDIR}/tests/ReqTraceTests.o tests/ReqTraceTests.cpp
 
 
 ${TESTDIR}/tests/VCLTests.o: tests/VCLTests.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
-	$(COMPILE.cc) -O2 -I. -I. -I. -o ${TESTDIR}/tests/VCLTests.o tests/VCLTests.cpp
+	$(COMPILE.cc) -O2 -I. -I. -I. -I. -o ${TESTDIR}/tests/VCLTests.o tests/VCLTests.cpp
 
 
 ${OBJECTDIR}/_ext/194468644/vcl_nomain.o: ${OBJECTDIR}/_ext/194468644/vcl.o ../code_under_test/vcl.cpp 
