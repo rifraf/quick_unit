@@ -1,4 +1,4 @@
-/* 
+/*
  * quick_unit.hpp : http://github.com/rifraf/quick_unit
  * Author: David Lake
  *
@@ -15,15 +15,15 @@
  * Example:
  *
  *  DECLARE_SUITE(My First Tests)
- *  
+ *
  *  TEST("the compiler can add") {
  *    assert(3 == 1 + 2,			SHOULD(add numbers));
  *  }
- *  
+ *
  *  TEST("the compiler can subtract") {
  *    assert_equal(1 , 2 - 1, SHOULD(subtract numbers));
  *  }
- *  
+ *
  *  int main(int argc, char *argv[]) {
  *  	return RUN_TESTS();
  *  }
@@ -136,7 +136,7 @@ public:
   virtual void TestOutput(const std::string &suite_name, const std::string &test_name, const std::string &text) {} // Before CompletedTest();
 	virtual void CompletedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
 
-  QUReporter() {_chain = NULL; }  
+  QUReporter() {_chain = NULL; }
   void chain(QUReporter *chain) { _chain = chain; }
   QUReporter *chain(void) {return _chain; }
 
@@ -276,7 +276,7 @@ public:
   int passes() { return _passes; }
   int fails() {
     if (_passes + _fails == 0) {
-      _fails = 1; // No asserts - not a valid test. Report as a fail
+      return 1; // No asserts - not a valid test. Report as a fail
     }
     return _fails;
   }
@@ -287,6 +287,12 @@ public:
 			_full_message = _fail_message + _info_message.str();
 		}
     return _full_message;
+  }
+  
+  void force_fail_message(const char *forced_message) {
+    std::ostringstream os;
+    os << forced_message << " Completed assertions:" << _assertions;
+    _fail_message = os.str();
   }
 
   // Test output text helpers
@@ -424,7 +430,7 @@ public:
   }
   void Add(QUTest *test) {
     _tests.push_back(test);
-  }  
+  }
   int RunAll(void) {
     unsigned total_fails = 0;
     if (_chain) {
@@ -454,11 +460,13 @@ public:
 			EACH_QUREPORTER(StartedTest(_suite_name, test_name))
       try {
         (*iter)->Run();
-      } catch(QUTestFail) {
+      } catch(QUTestFail *err) {
         // Failed assertions cause us to come here
+        failed = true;
       } catch(...) {
         failed = true;
-      }     
+        (*iter)->force_fail_message("unexpected exception in the test");
+      }
 			EACH_QUREPORTER_REVERSE(StoppingTest(_suite_name, test_name))
       AfterEachTest();
       double duration = (clock() - test_start) / 1000.0;
