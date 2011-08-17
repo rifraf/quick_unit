@@ -19,7 +19,7 @@ TEST(AnsiStrings can be created) {
 TEST(AnsiString content can be read) {
   TESTS("$VCL 3", "$VCL 4");  // EXPERIMENTAL
   assert_equal((new AnsiString())->c_str(), "",                 SHOULD(be empty));
-  assert_equal((new AnsiString("cotent"))->c_str(), "content",  SHOULD(contain 'content'));
+  assert_equal((new AnsiString("content"))->c_str(), "content",  SHOULD(contain 'content'));
   assert_equal((new AnsiString((unsigned)5))->c_str(), "5",     SHOULD(contain 5));
   assert_equal((new AnsiString(-5))->c_str(), "-5",             SHOULD(contain -5));
 }

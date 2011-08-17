@@ -74,10 +74,15 @@
 
 namespace quick_unit {
 
-typedef struct {
+struct Qu_Result {
   bool pass;
-  const std::string &msg;
-} Qu_Result;
+  std::string msg;
+	Qu_Result(bool truth) : pass(truth), msg("") {}
+	Qu_Result(bool truth, const std::string expectation) {
+		pass = truth;
+		msg = expectation;
+	}
+};
 
 class QUTestSuite;
 
@@ -275,11 +280,15 @@ protected:
 
 public:
   QUTest(const char *msg) {
+    _test_name = msg;
+     Reset();
+  }
+  void Reset() {
     _fails = 0;
     _passes = 0;
     _assertions = 0;
     _fail_message = "";
-    _test_name = msg;
+     _info_message.str("");
   }
   virtual void Run(void) = 0; // Must be subclassed
   const std::string &test_name() { return _test_name; }
@@ -329,10 +338,10 @@ public:
     return count;
   }
 
-	Qu_Result result(bool truth, const std::string expectation) {
-		Qu_Result X = {truth, expectation};
+  Qu_Result result(bool truth, const std::string expectation) {
+    Qu_Result X(truth, expectation);
     return X;
-	}
+  }
 
   // Result matcher: truth
   ADD_MATCHER(is_true, bool truth) {
@@ -453,8 +462,9 @@ public:
       BeforeEachTest();
 			EACH_QUREPORTER(StartedTest(_suite_name, test_name))
       try {
+        (*iter)->Reset();
         (*iter)->Run();
-      } catch(QUTestFail *err) {
+      } catch(QUTestFail * /*err*/) {
         // Failed assertions cause us to come here
         failed = true;
       } catch(...) {

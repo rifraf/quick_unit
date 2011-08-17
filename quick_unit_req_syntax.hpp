@@ -65,13 +65,13 @@ public:
   }
 
   Requirer& test_truth(bool truth) {
-		Qu_Result result = {truth, ""};
+		Qu_Result result(truth);
     _test->_assert(result, truth ? "" : fail_message());
     return *this;
   }
 
   Requirer& test_truth(bool truth, const std::string &msg) {
-		Qu_Result result = {truth, ""};
+		Qu_Result result(truth);
     _test->_assert(result, truth ? "" : fail_message(msg));
     return *this;
   }
