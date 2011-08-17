@@ -125,7 +125,7 @@ protected:
 public:
 	virtual void StartingSuite(const std::string &suite_name) {} // Before anything
 	virtual void StartedSuite(const std::string &suite_name) {}  // Just after BeforeAllTests();
-	virtual void StoppingSuite(const std::string &suite_name) {} // Before AfterAllTests();
+	virtual void StoppingSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {} // Before AfterAllTests();
 	virtual void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {} // After AfterAllTests();
 
 	virtual void StartingTest(const std::string &suite_name, const std::string &test_name) {} // Before anything
@@ -163,7 +163,7 @@ public:
 	void StartingSuite(const std::string &suite_name) {
     Output() << std::endl << "====================================================" << std::endl << "Starting " << suite_name << " at " << QUReporter::current_time() << std::endl;
 	}
-	void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
+	void StoppingSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
     Output() << std::endl << "----------------------------------------------------" << std::endl << "Finished " << suite_name << " at " << QUReporter::current_time() <<
 			"Passes: " << passes << " Fails: " << fails << std::endl << "----------------------------------------------------" << std::endl;
 	}
@@ -227,6 +227,18 @@ class QUTestFail {
   // Exception object thrown when a test fails
 };
 
+#define ADD_MATCHER(name,...) Qu_Result name(__VA_ARGS__)
+#define MATCHER(condition, ...) \
+    bool is_true = condition;\
+    if (!is_true) {\
+      _expectation_builder.str("");\
+      _expectation_builder << __VA_ARGS__;\
+      _expectation = _expectation_builder.str();\
+    }\
+    return result(is_true, _expectation);
+#define ADD_ASSERTION(name,...) void QU_TOKEN_MERGE(QU_ASSERT,_ ## name)(__VA_ARGS__, const char *msg = NULL)
+#define ASSERTION(test) _assert(test, msg);
+
 /******************************************************************************/
 class QUTest {  // Pure base class for all tests
 /******************************************************************************/
@@ -282,7 +294,7 @@ public:
   }
   const std::string &fail_message() {
     if (_passes + _fails == 0) {
-			_full_message = "No assertions were executed";
+			_full_message = "No assertions were executed/completed";
     } else {
 			_full_message = _fail_message + _info_message.str();
 		}
@@ -293,6 +305,7 @@ public:
     std::ostringstream os;
     os << forced_message << " Completed assertions:" << _assertions;
     _fail_message = os.str();
+    _fails++;
   }
 
   // Test output text helpers
@@ -317,61 +330,38 @@ public:
   }
 
 	Qu_Result result(bool truth, const std::string expectation) {
-		Qu_Result X = {truth, _expectation};
+		Qu_Result X = {truth, expectation};
     return X;
 	}
 
   // Result matcher: truth
-  Qu_Result is_true(bool truth) {
-    if (!truth) {
-      _expectation = " (Expected result was not true)";
-    }
-		return result(truth, _expectation);
+  ADD_MATCHER(is_true, bool truth) {
+    MATCHER(truth, " (Expected result was not true)");
   }
   // Result matcher: falsity
-  Qu_Result is_false(bool truth) {
-    if (truth) {
-      _expectation = " (Expected result was not false)";
-    }
-		return result(!truth, _expectation);
+  ADD_MATCHER(is_false, bool truth) {
+    MATCHER(!truth, " (Expected result was not false)");
   }
   // Result matchers: Equality
-  template <class T> Qu_Result equal(const T& a, const T& b) {
-    bool truth = (a == b);
-    if (!truth) {
-      _expectation_builder.str("");
-			_expectation_builder << " (Expected: " << a << ", got: " << b << ")";
-      _expectation = _expectation_builder.str();
-    }
-		return result(truth, _expectation);
+  template <class T> ADD_MATCHER(equal, const T& a, const T& b) {
+    MATCHER((a == b), " (Expected: " << a << ", got: " << b << ")");
   }
-  Qu_Result equal(const char *a, const char *b) {
-    bool truth = (strcmp(a,b) == 0);
-    if (!truth) {
-      _expectation_builder.str("");
-			_expectation_builder << " (Expected: " << a << ", got: " << b << ")";
-      _expectation = _expectation_builder.str();
-    }
-		return result(truth, _expectation);
+  ADD_MATCHER(equal, const char *a, const char *b) {
+    MATCHER((strcmp(a,b) == 0), " (Expected: " << a << ", got: " << b << ")");
   }
   // Result matchers: Inequality
-  template <class T> Qu_Result not_equal(const T& a, const T& b) {
-    bool truth = (a != b);
-    if (!truth) {
-      _expectation_builder.str("");
-			_expectation_builder << " (Expected difference. Both: " << a << ")";
-      _expectation = _expectation_builder.str();
-    }
-		return result(truth, _expectation);
+  template <class T> ADD_MATCHER(not_equal, const T& a, const T& b) {
+    MATCHER((a != b), " (Expected difference. Both: " << a << ")");
   }
-  Qu_Result not_equal(const char *a, const char *b) {
-    bool truth = (strcmp(a,b) != 0);
-    if (!truth) {
-      _expectation_builder.str("");
-			_expectation_builder << " (Expected difference. Both: " << a << ")";
-      _expectation = _expectation_builder.str();
-    }
-		return result(truth, _expectation);
+  ADD_MATCHER(not_equal, const char *a, const char *b) {
+    MATCHER((strcmp(a,b) != 0), " (Expected difference. Both: " << a << ")");
+  }
+  // Result matcher: inclusion/exclusion
+  ADD_MATCHER(includes, const char *inclusion, const char *text) {
+    MATCHER((strstr(text, inclusion) != NULL), " (Expected to see '" << inclusion << "' in '"<< text << "')");
+  }
+  ADD_MATCHER(excludes, const char *inclusion, const char *text) {
+    MATCHER((strstr(text, inclusion) == NULL), " (Expected not to see '" << inclusion << "' in '"<< text << "')");
   }
 
   // The core assertion handler
@@ -397,14 +387,17 @@ public:
   // Assertions
   // ... true/false
   void QU_ASSERT(bool truth, const char *msg = NULL) { _assert(is_true(truth), msg); }
-  void QU_TOKEN_MERGE(QU_ASSERT,_true)(bool truth, const char *msg = NULL) {_assert(is_true(truth), msg); }
-  void QU_TOKEN_MERGE(QU_ASSERT,_false)(bool truth, const char *msg = NULL) { _assert(is_false(truth), msg); }
+  ADD_ASSERTION(true, bool truth)  {ASSERTION(is_true(truth)); }
+  ADD_ASSERTION(false, bool truth) {ASSERTION(is_false(truth)); }
   // ... equal
-  template <class T> void QU_TOKEN_MERGE(QU_ASSERT,_equal)(const T& a, const T& b, const char *msg = NULL) { _assert(equal(a,b), msg); }
-  void QU_TOKEN_MERGE(QU_ASSERT,_equal)(const char *a, const char *b, const char *msg = NULL) {_assert(equal(a,b), msg);}
+  template <class T> ADD_ASSERTION(equal, const T& a, const T& b) {ASSERTION(equal(a,b)); }
+  ADD_ASSERTION(equal, const char *a, const char *b) {ASSERTION(equal(a,b));}
   // ... not equal
-  template <class T> void QU_TOKEN_MERGE(QU_ASSERT,_not_equal)(const T& a, const T& b, const char *msg = NULL) {_assert(not_equal(a,b), msg); }
-  void QU_TOKEN_MERGE(QU_ASSERT,_not_equal)(const char *a, const char *b, const char *msg = NULL) {_assert(not_equal(a,b), msg);}
+  template <class T> ADD_ASSERTION(not_equal, const T& a, const T& b) {ASSERTION(not_equal(a,b)); }
+  ADD_ASSERTION(not_equal, const char *a, const char *b) {ASSERTION(not_equal(a,b));}
+  // Assertion: inclusion/exclusion
+  ADD_ASSERTION(include, const char *inclusion, const char *text) {ASSERTION(includes(inclusion, text));}
+  ADD_ASSERTION(exclude, const char *inclusion, const char *text) {ASSERTION(excludes(inclusion, text));}
 };
 
 /******************************************************************************/
@@ -448,6 +441,7 @@ public:
 
     #define EACH_QUREPORTER(op) for (std::list<QUReporter *>::iterator qfiter = reporters.begin(); qfiter != reporters.end(); ++qfiter) {(*qfiter)->op; }
     #define EACH_QUREPORTER_REVERSE(op) for (std::list<QUReporter *>::reverse_iterator qriter = reporters.rbegin(); qriter != reporters.rend(); ++qriter) {(*qriter)->op; }
+    QUStdOutTracker::Output(&std::cout);  // Default
     EACH_QUREPORTER(StartingSuite(_suite_name))
     BeforeAllTests();
 		EACH_QUREPORTER(StartedSuite(_suite_name))
@@ -484,7 +478,7 @@ public:
       }
 			EACH_QUREPORTER_REVERSE(CompletedTest(_suite_name, test_name, duration))
     }
-		EACH_QUREPORTER_REVERSE(StoppingSuite(_suite_name))
+		EACH_QUREPORTER_REVERSE(StoppingSuite(_suite_name, (clock() - suite_start) / 1000.0, passes, fails))
     AfterAllTests();
 		EACH_QUREPORTER_REVERSE(CompletedSuite(_suite_name, (clock() - suite_start) / 1000.0, passes, fails))
     return total_fails;
@@ -494,13 +488,15 @@ public:
 /******************************************************************************/
 /* Macros for creating a TEST */
 #define QU_TEST_ANCESTOR QUTest
+#define EXTEND_TEST(name) class name : public quick_unit::QU_TEST_ANCESTOR { public: name(const char *msg) : quick_unit::QU_TEST_ANCESTOR(msg) {}
+#define END_EXTEND_TEST };
 
 // MUST be on a single line
 #define TEST(name) namespace { class QU_UNIQ_ID(QUTest) : public QU_TEST_ANCESTOR {public: QU_UNIQ_ID(QUTest)() : QU_TEST_ANCESTOR(#name) {if (QUTestSuiteTracker::CurrentQUTestSuite()) {QUTestSuiteTracker::CurrentQUTestSuite()->Add(this);}} void Run(void); } static QU_UNIQ_ID(test);} void QU_UNIQ_ID(QUTest)::Run(void)
 
 /******************************************************************************/
 /* Macros for creating a SHOULD message */
-#define QU_SHOULD(msg) QU_STRINGIZE("line ",__LINE__) ": Should " # msg
+#define QU_SHOULD(msg) QU_STRINGIZE("line ",__LINE__) ": Should "  # msg "."
 #define SHOULD QU_SHOULD
 
 /******************************************************************************/

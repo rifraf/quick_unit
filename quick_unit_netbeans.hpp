@@ -7,7 +7,7 @@
  *   use quick_unit to implement tests that integrate with Netbeans projects.
  *   For a real example, see quick_unit/MinGW_Netbeans/VCLTests.cpp in the github
  *   repository.
- * 
+ *
  * Quick example:
  *   #include "quick_unit.hpp"
  *   #include "quick_unit_netbeans.hpp"
@@ -23,14 +23,14 @@
 #define	QUICK_UNIT_NETBEANS_HPP
 
 BEGIN_REPORTER(Netbeans)
-  void StartingSuite(const std::string &suite_name) {
-    Output() << "%SUITE_STARTING% " << suite_name << std::endl;
-  }
+//  void StartingSuite(const std::string &suite_name) {
+//  }
   void StartedSuite(const std::string &suite_name)  {
+    Output() << "%SUITE_STARTING% " << suite_name << std::endl;
     Output() << "%SUITE_STARTED%" << std::endl;
   }
-  void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
-    Output() << std::endl << "%SUITE_FINISHED% time=" << std::fixed << duration << std::endl;
+  void StoppingSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
+    Output() << std::endl << "%SUITE_FINISHED% time=" << std::fixed << duration << std::endl << std::endl;
   }
   void StartingTest(const std::string &suite_name, const std::string &test_name) {
     Output() << "%TEST_STARTED% " << without_whitespace(test_name) << " (" << suite_name << ")" << std::endl;
