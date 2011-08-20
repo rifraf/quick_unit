@@ -21,7 +21,7 @@ task :test => Exe do
 
   require 'TestRunner'
   
-  TestRunner.RunModuleTests "quick_unit", "vs2010"
+  TestRunner.RunModuleTests "quick_unit", "vs2005"
 
   class RReqsDOCTest < TestFixture
     def test_boo

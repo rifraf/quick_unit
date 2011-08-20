@@ -17,7 +17,7 @@
  *  DECLARE_SUITE(My First Tests)
  *
  *  TEST("the compiler can add") {
- *    assert(3 == 1 + 2,			SHOULD(add numbers));
+ *    assert(3 == 1 + 2, SHOULD(add numbers));
  *  }
  *
  *  TEST("the compiler can subtract") {
@@ -25,7 +25,7 @@
  *  }
  *
  *  int main(int argc, char *argv[]) {
- *  	return RUN_TESTS();
+ *    return RUN_TESTS();
  *  }
  *
  * Inspired by Ruby. Thanks Matz. Thanks Dave Thomas.
@@ -59,7 +59,7 @@
  *  Debian linux
  */
 #ifndef QUICK_UNIT_HPP
-#define	QUICK_UNIT_HPP
+#define QUICK_UNIT_HPP
 
 #include <sstream>
 #include <iostream>
@@ -77,11 +77,11 @@ namespace quick_unit {
 struct Qu_Result {
   bool pass;
   std::string msg;
-	Qu_Result(bool truth) : pass(truth), msg("") {}
-	Qu_Result(bool truth, const std::string expectation) {
-		pass = truth;
-		msg = expectation;
-	}
+  Qu_Result(bool truth) : pass(truth), msg("") {}
+  Qu_Result(bool truth, const std::string expectation) {
+    pass = truth;
+    msg = expectation;
+  }
 };
 
 class QUTestSuite;
@@ -128,59 +128,59 @@ protected:
   static std::ostream &Output(void) { return QUStdOutTracker::Output(); }
 
 public:
-	virtual void StartingSuite(const std::string &suite_name) {} // Before anything
-	virtual void StartedSuite(const std::string &suite_name) {}  // Just after BeforeAllTests();
-	virtual void StoppingSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {} // Before AfterAllTests();
-	virtual void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {} // After AfterAllTests();
+  virtual void StartingSuite(const std::string &suite_name) {} // Before anything
+  virtual void StartedSuite(const std::string &suite_name) {}  // Just after BeforeAllTests();
+  virtual void StoppingSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {} // Before AfterAllTests();
+  virtual void CompletedSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {} // After AfterAllTests();
 
-	virtual void StartingTest(const std::string &suite_name, const std::string &test_name) {} // Before anything
-	virtual void StartedTest(const std::string &suite_name, const std::string &test_name) {}  // Just after BeforeEachTest();
-	virtual void StoppingTest(const std::string &suite_name, const std::string &test_name) {} // Before AfterEachTest();
-	virtual void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {} // After AfterEachTest();
-	virtual void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
+  virtual void StartingTest(const std::string &suite_name, const std::string &test_name) {} // Before anything
+  virtual void StartedTest(const std::string &suite_name, const std::string &test_name) {}  // Just after BeforeEachTest();
+  virtual void StoppingTest(const std::string &suite_name, const std::string &test_name) {} // Before AfterEachTest();
+  virtual void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {} // After AfterEachTest();
+  virtual void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
   virtual void TestOutput(const std::string &suite_name, const std::string &test_name, const std::string &text) {} // Before CompletedTest();
-	virtual void CompletedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
+  virtual void CompletedTest(const std::string &suite_name, const std::string &test_name, double duration) {} // After AfterEachTest();
 
   QUReporter() {_chain = NULL; }
   void chain(QUReporter *chain) { _chain = chain; }
   QUReporter *chain(void) {return _chain; }
 
   // Helper: returns the current date/time
-	static const char *current_time(void) {
+  static const char *current_time(void) {
     time_t szClock;
     time( &szClock );
-		#ifdef _MSC_VER
-		static char timebuf[26];
-		struct tm newtime;
-		localtime_s(&newtime, &szClock);
+    #ifdef _MSC_VER
+    static char timebuf[26];
+    struct tm newtime;
+    localtime_s(&newtime, &szClock);
     asctime_s(timebuf, 26, &newtime);
-		return timebuf;
-		#else
+    return timebuf;
+    #else
     return asctime(localtime(&szClock));
-		#endif
-	}
+    #endif
+  }
 };
 
 /******************************************************************************/
 class DefaultReporter : public QUReporter { // The default test reporter
 /******************************************************************************/
 public:
-	void StartingSuite(const std::string &suite_name) {
+  void StartingSuite(const std::string &suite_name) {
     Output() << std::endl << "====================================================" << std::endl << "Starting " << suite_name << " at " << QUReporter::current_time() << std::endl;
-	}
-	void StoppingSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
+  }
+  void StoppingSuite(const std::string &suite_name, double duration, unsigned passes, unsigned fails) {
     Output() << std::endl << "----------------------------------------------------" << std::endl << "Finished " << suite_name << " at " << QUReporter::current_time() <<
-			"Passes: " << passes << " Fails: " << fails << std::endl << "----------------------------------------------------" << std::endl;
-	}
-	void StartingTest(const std::string &suite_name, const std::string &test_name) {
+      "Passes: " << passes << " Fails: " << fails << std::endl << "----------------------------------------------------" << std::endl;
+  }
+  void StartingTest(const std::string &suite_name, const std::string &test_name) {
     Output() << "Test: " << test_name << " => ";
-	}
-	void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {
-		Output() << "FAILED. " << fail_message << std::endl;
-	}
-	void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {
-		Output() << "OK." << std::endl;
-	}
+  }
+  void FailedTest(const std::string &suite_name, const std::string &test_name, double duration, const std::string &fail_message) {
+    Output() << "FAILED. " << fail_message << std::endl;
+  }
+  void PassedTest(const std::string &suite_name, const std::string &test_name, double duration) {
+    Output() << "OK." << std::endl;
+  }
   void TestOutput(const std::string &suite_name, const std::string &test_name, const std::string &text) {
     Output()
       << "-- Output --" << std::endl
@@ -254,7 +254,7 @@ protected:
   std::string _test_name;
   std::string _fail_message;
   std::ostringstream _info_message;
-	std::ostringstream _expectation_builder;
+  std::ostringstream _expectation_builder;
   std::string _full_message;
   std::ostringstream _output;
   std::string _output_message;
@@ -268,11 +268,11 @@ protected:
     char *buffer = NULL;
     buffer = new char [length + 1];
     memset(buffer, 0, length + 1);
-		#ifdef _MSC_VER
+    #ifdef _MSC_VER
     result = vsnprintf_s(buffer, length + 1, _TRUNCATE, fmt, args);
-		#else
+    #else
     result = vsnprintf(buffer, length, fmt, args);
-		#endif
+    #endif
     out = buffer;
     delete [] buffer;
     return result;
@@ -303,13 +303,13 @@ public:
   }
   const std::string &fail_message() {
     if (_passes + _fails == 0) {
-			_full_message = "No assertions were executed/completed";
+      _full_message = "No assertions were executed/completed";
     } else {
-			_full_message = _fail_message + _info_message.str();
-		}
+      _full_message = _fail_message + _info_message.str();
+    }
     return _full_message;
   }
-  
+
   void force_fail_message(const char *forced_message) {
     std::ostringstream os;
     os << forced_message << " Completed assertions:" << _assertions;
@@ -415,7 +415,7 @@ class QUTestSuite {
 private:
   std::string _suite_name;
   std::list<QUTest *> _tests;
-	QUReporter * _reporter;
+  QUReporter * _reporter;
   QUTestSuite * _chain;
 
 protected:
@@ -452,14 +452,14 @@ public:
     #define EACH_QUREPORTER_REVERSE(op) for (std::list<QUReporter *>::reverse_iterator qriter = reporters.rbegin(); qriter != reporters.rend(); ++qriter) {(*qriter)->op; }
     EACH_QUREPORTER(StartingSuite(_suite_name))
     BeforeAllTests();
-		EACH_QUREPORTER(StartedSuite(_suite_name))
+    EACH_QUREPORTER(StartedSuite(_suite_name))
     for (std::list<QUTest *>::iterator iter = _tests.begin(); iter != _tests.end(); ++iter) {
       bool failed = false;
       std::string test_name = (*iter)->test_name();
-			EACH_QUREPORTER(StartingTest(_suite_name, test_name))
+      EACH_QUREPORTER(StartingTest(_suite_name, test_name))
       int test_start = clock();
       BeforeEachTest();
-			EACH_QUREPORTER(StartedTest(_suite_name, test_name))
+      EACH_QUREPORTER(StartedTest(_suite_name, test_name))
       try {
         (*iter)->Reset();
         (*iter)->Run();
@@ -470,26 +470,26 @@ public:
         failed = true;
         (*iter)->force_fail_message("unexpected exception in the test");
       }
-			EACH_QUREPORTER_REVERSE(StoppingTest(_suite_name, test_name))
+      EACH_QUREPORTER_REVERSE(StoppingTest(_suite_name, test_name))
       AfterEachTest();
       double duration = (clock() - test_start) / 1000.0;
       if (failed || (*iter)->fails()) {
         fails++;
         total_fails++;
-				EACH_QUREPORTER_REVERSE(FailedTest(_suite_name, test_name, duration, (*iter)->fail_message()))
+        EACH_QUREPORTER_REVERSE(FailedTest(_suite_name, test_name, duration, (*iter)->fail_message()))
       } else {
-				passes++;
-				EACH_QUREPORTER_REVERSE(PassedTest(_suite_name, test_name, duration))
-			}
+        passes++;
+        EACH_QUREPORTER_REVERSE(PassedTest(_suite_name, test_name, duration))
+      }
       std::string output = (*iter)->test_output_text();
       if (!output.empty()) {
-  			EACH_QUREPORTER_REVERSE(TestOutput(_suite_name, test_name, output))
+        EACH_QUREPORTER_REVERSE(TestOutput(_suite_name, test_name, output))
       }
-			EACH_QUREPORTER_REVERSE(CompletedTest(_suite_name, test_name, duration))
+      EACH_QUREPORTER_REVERSE(CompletedTest(_suite_name, test_name, duration))
     }
-		EACH_QUREPORTER_REVERSE(StoppingSuite(_suite_name, (clock() - suite_start) / 1000.0, passes, fails))
+    EACH_QUREPORTER_REVERSE(StoppingSuite(_suite_name, (clock() - suite_start) / 1000.0, passes, fails))
     AfterAllTests();
-		EACH_QUREPORTER_REVERSE(CompletedSuite(_suite_name, (clock() - suite_start) / 1000.0, passes, fails))
+    EACH_QUREPORTER_REVERSE(CompletedSuite(_suite_name, (clock() - suite_start) / 1000.0, passes, fails))
     return total_fails;
   }
 };
@@ -537,4 +537,4 @@ using namespace quick_unit; namespace  { class QU_UNIQ_ID(QUReporter) : public n
 } /* namespace */
 TEST_REPORTER(Default)
 
-#endif	/* QUICK_UNIT_HPP */
+#endif  /* QUICK_UNIT_HPP */
