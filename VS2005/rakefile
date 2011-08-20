@@ -1,0 +1,90 @@
+require 'rake/clean'
+
+CLEAN.include('**/*.obj', '**/*.exe', 'ipch', 'Debug', '*ReSharper*', 'results.*')
+
+MSBuild = 'c:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe'
+Sln = 'VS2005.sln'
+Exe = 'Debug\VS2005.exe'
+
+file Exe => FileList['*.cpp', '*.h', '../*.hpp'] do |x|
+  puts "#{MSBuild} #{Sln}"
+  system "#{MSBuild} #{Sln}"
+end
+
+desc "Build"
+task :build => Exe
+
+task :default => :build
+
+desc "Test"
+task :test => Exe do
+
+  require 'TestRunner'
+  
+  TestRunner.RunModuleTests "quick_unit", "vs2010"
+
+  class RReqsDOCTest < TestFixture
+    def test_boo
+      text = `#{Exe}`
+      #puts text
+      assert_rulechk("Results to screen") {|r|
+        r.load text
+        expect_result_text(r)
+      }
+
+      assert_rulechk("Results to file") {|r|
+        r.open 'results.txt'
+        expect_result_text(r)
+      }
+    end
+
+    def expect_result_text(r)
+      r.find      'Starting Compiler Tests at'
+      r.laterfind 'Finished Compiler Tests at'
+      r.laterfind 'Passes: 1 Fails: 0'
+
+      r.laterfind 'Starting Require syntax at'
+      r.laterfind 'Test: Experiments: require syntax => OK.'
+      r.laterfind 'Finished Require syntax at'
+      r.laterfind 'Passes: 1 Fails: 0'
+
+      r.laterfind 'Starting AnsiString Tests at'
+      r.laterfind 'Test: AnsiStrings can be created => OK.'
+      r.laterfind 'Test: AnsiString content can be read => OK.'
+      r.laterfind 'Test: AnsiString content can be assigned => OK.'
+      r.laterfind 'Test: AnsiString content can be compared => OK.'
+      r.laterfind 'Test: AnsiStrings can be added => OK.'
+      r.laterfind 'Test: AnsiStrings can be appended => OK.'
+      r.laterfind 'Test: AnsiStrings have size => OK.'
+      r.laterfind 'Test: Can find position of a substring => OK.'
+      r.laterfind 'Test: AnsiStrings can extract a sub string => OK.'
+      r.laterfind 'Test: AnsiStrings can change case => OK.'
+      r.laterfind 'Test: AnsiStrings can parse for integers => OK.'
+      r.laterfind 'Test: AnsiStrings support printf => OK.'
+      r.laterfind 'Finished AnsiString Tests at'
+      r.laterfind 'Passes: 12 Fails: 0'
+
+      r.laterfind 'Starting StringList Tests at'
+      r.laterfind 'Test: StringLists can be created => OK.'
+      r.laterfind 'Test: StringLists can contain text => OK.'
+      r.laterfind 'Test: Adding to StringLists gives newline separators => OK.'
+      r.laterfind 'Test: A StringList can be cleared => OK.'
+      r.laterfind 'Test: A StringList has countable elements => OK.'
+      r.laterfind 'Test: The elements of a StringList can be accessed => OK.'
+      r.laterfind 'Finished StringList Tests at'
+      r.laterfind 'Passes: 6 Fails: 0'
+
+      r.laterfind 'Starting Verify syntax at'
+      r.laterfind 'Test: Experiments: verify syntax => OK.'
+      r.laterfind 'Finished Verify syntax at'
+      r.laterfind 'Passes: 1 Fails: 0'
+
+      r.laterfind 'Starting My First Tests at'
+      r.laterfind 'Test: the compiler can add => OK.'
+      r.laterfind /Test: the compiler can subtract => FAILED\. line \d+: Should subtract numbers\. \(Expected: 11, got: 1\)/
+      r.laterfind 'Finished My First Tests'
+      r.laterfind 'Passes: 1 Fails: 1'
+    end
+  end
+  
+end

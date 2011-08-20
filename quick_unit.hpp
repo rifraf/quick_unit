@@ -450,7 +450,6 @@ public:
 
     #define EACH_QUREPORTER(op) for (std::list<QUReporter *>::iterator qfiter = reporters.begin(); qfiter != reporters.end(); ++qfiter) {(*qfiter)->op; }
     #define EACH_QUREPORTER_REVERSE(op) for (std::list<QUReporter *>::reverse_iterator qriter = reporters.rbegin(); qriter != reporters.rend(); ++qriter) {(*qriter)->op; }
-    QUStdOutTracker::Output(&std::cout);  // Default
     EACH_QUREPORTER(StartingSuite(_suite_name))
     BeforeAllTests();
 		EACH_QUREPORTER(StartedSuite(_suite_name))

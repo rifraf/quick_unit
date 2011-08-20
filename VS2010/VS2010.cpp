@@ -1,7 +1,6 @@
 //
 // VS2010.cpp : quick_unit test
 //
-
 #include "../quick_unit.hpp"
 
 // ----------------------------
