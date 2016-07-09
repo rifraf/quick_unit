@@ -522,7 +522,7 @@ class QU_UNIQ_ID(QUSuite) : public QUTestSuite{ public: QU_UNIQ_ID(QUSuite)() : 
 #define SETUP void BeforeEachTest()
 #define TEARDOWN void AfterEachTest()
 
-#define RUN_TESTS() QUTestSuiteTracker::CurrentQUTestSuite()->RunAll()
+#define RUN_TESTS() if (QUTestSuiteTracker::CurrentQUTestSuite()) { QUTestSuiteTracker::CurrentQUTestSuite()->RunAll(); }
 /******************************************************************************/
 /* Macros for REPORTERs */
 #define TEST_REPORTER(name) \
